@@ -101,25 +101,6 @@ export default function Home() {
             height={250}
           />
         ))}
-
-        <StickyNote
-          text="This is a sticky note with some text."
-          color={green()}
-          width={250}
-          height={250}
-        />
-        <StickyNote
-          text="Another sticky note with different text."
-          color={green()}
-          width={250}
-          height={250}
-        />
-        <StickyNote
-          text="Yet another sticky note, this one is larger."
-          color={green()}
-          width={250}
-          height={250}
-        />
       </div>
       <Link href="/writing_space">
         <Add />

@@ -98,7 +98,7 @@ const StickyNote = ({ text, author, timestamp, upvotes, title, id, color, width,
             </h2>
             
             {author && (
-            <h3 className={`${ibmPlexMono.className}`}>
+            <h3 className={`${ibmPlexMonoBold.className}`}>
               By {author}
             </h3>)}
           </div>
@@ -137,11 +137,11 @@ const StickyNote = ({ text, author, timestamp, upvotes, title, id, color, width,
       </div>
 
       <div
-        className={`text-center sticky-note ${ibmPlexMono.className} duration-300 transform hover:scale-105 transition-all ease-in-out`}
+        className={`sticky-note ${ibmPlexMono.className} duration-300 transform hover:scale-105 transition-all ease-in-out`}
         style={stickyNoteStyle}
         onClick={handleExpand}
         >
-         <div className="flex justify-center items-center">
+         <div className="flex justify-center items-center mb-1">
           <span
             className={`font-bold ${ibmPlexMonoBold.className}`}
             style={{
@@ -152,7 +152,7 @@ const StickyNote = ({ text, author, timestamp, upvotes, title, id, color, width,
           </span>
         </div>
         
-        <span dangerouslySetInnerHTML={{ __html: text }} className={`${ibmPlexMono.className} text-center`} style={{ color: '#333' }}></span>
+        <span dangerouslySetInnerHTML={{ __html: text }} className={`${ibmPlexMono.className}`} style={{ color: '#333' }}></span>
       </div>
     </>
   );
