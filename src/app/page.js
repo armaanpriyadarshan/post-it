@@ -136,7 +136,7 @@ export default function Home() {
           />
         ))}
       </div>
-      <Link href="/writing-space">
+      <Link href={{ pathname: "/writing-space", query: { prompt } }}>
         <Add />
       </Link>
       <Footer />
