@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { AiOutlineInfo } from "react-icons/ai";
 import { IBM_Plex_Mono } from 'next/font/google';
+import Add from "@/components/add";
+import Link from "next/link";
 
 const ibmPlexMono = IBM_Plex_Mono({
     subsets: ['latin'],
@@ -25,7 +27,11 @@ export default function Footer() {
                     </div>
                 )}
 
-                <div onClick={() => setShowInfo(!showInfo)} className="w-12 h-12 flex items-center justify-center rounded-full border-2 border-[var(--cafeBrown)] text-[var(--cafeBrown)] bg-transparent hover:bg-[var(--cafeBrown)] hover:text-[var(--cream)] transition-colors duration-300 cursor-pointer">
+                <Link href="/writing_space" className="">
+                    <Add />
+                </Link>
+                
+                <div onMouseEnter={() => setShowInfo(true)} onMouseLeave={() => setShowInfo(false)} className="mt-4 w-12 h-12 flex items-center justify-center rounded-full border-2 border-[var(--cafeBrown)] text-[var(--cafeBrown)] bg-transparent hover:bg-[var(--cafeBrown)] hover:text-[var(--cream)] transition-colors duration-300 cursor-pointer">
                     <AiOutlineInfo size={24} />
                 </div>
             </div>

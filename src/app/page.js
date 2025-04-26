@@ -3,7 +3,6 @@
 import { IBM_Plex_Mono, Roboto_Condensed } from "next/font/google";
 import StickyNote from "@/components/stickyNote";
 import Footer from "@/components/footer";
-import Add from "@/components/add";
 import { supabase } from "@/lib/supabaseClient";
 import { useState, useEffect } from "react";
 import Link from "next/link";
@@ -28,9 +27,24 @@ function green() {
   return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
 }
 
+const TimeDisplay = () => {
+  const [time, setTime] = useState(new Date());
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setTime(new Date());
+    }, 1000);
+
+    return () => clearInterval(intervalId);
+  }, []);
+
+  return <span>{time.toLocaleTimeString()}</span>;
+};
+
 export default function Home() {
   const [prompt, setPrompt] = useState("Loading...");
   const [stickyNotes, setStickyNotes] = useState([]);
+  const [numWords, setNumWords] = useState(0);
 
   const getPrompt = async () => {
     const { data, error } = await supabase
@@ -75,6 +89,14 @@ export default function Home() {
     getStickyNotes("newest");
   }, []);
 
+  useEffect(() => {
+    const totalWords = stickyNotes.reduce((acc, note) => {
+      return acc + (note.story ? note.story.split(" ").length : 0);
+    }, 0);
+    setNumWords(totalWords);
+  }
+  , [stickyNotes]);
+
   return (
     <div className="min-h-screen flex flex-col items-center">
       <div className="flex flex-col items-center justify-center m-12 max-w-4xl mx-auto text-center">
@@ -86,6 +108,11 @@ export default function Home() {
         >
           {prompt}
         </p>
+        <div className={`w-full px-10 pt-2 grid grid-cols-3 text-brown text-sm mt-2 ${ibmPlexMono.className}`}>
+          <span>{new Date().toISOString().split('T')[0]} | <TimeDisplay /></span>
+          <span>{stickyNotes.length} notes posted</span>
+          <span>{numWords} words written</span>
+        </div>
       </div>
       <div className="flex flex-wrap justify-center gap-6 p-4 mx-auto">
         {stickyNotes.map((note) => (
@@ -121,9 +148,6 @@ export default function Home() {
           height={250}
         />
       </div>
-      <Link href="/writing_space">
-        <Add />
-      </Link>
       <Footer />
     </div>
   );
