@@ -74,7 +74,7 @@ export default function Home() {
   return (
       <div className="min-h-screen flex flex-col items-center">
         <div className="flex flex-col items-center justify-center m-12 max-w-4xl mx-auto text-center">
-          <p className={`text-brown ${ibmPlexMono.className} text-2xl underline`}>
+          <p className={`text-brown ${ibmPlexMono.className} text-xl underline`}>
             today&apos;s prompt is...
           </p>
           <p className={`text-green ${robotoCondensed.className} text-4xl uppercase mt-4`}>
