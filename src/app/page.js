@@ -6,6 +6,7 @@ import Footer from "@/components/footer";
 import { supabase } from "@/lib/supabaseClient";
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Add from "@/components/add";
 
 const ibmPlexMono = IBM_Plex_Mono({
   subsets: ["latin"],
@@ -28,15 +29,18 @@ function green() {
 }
 
 const TimeDisplay = () => {
-  const [time, setTime] = useState(new Date());
+  const [time, setTime] = useState(null);
 
   useEffect(() => {
+    setTime(new Date());
     const intervalId = setInterval(() => {
       setTime(new Date());
     }, 1000);
 
     return () => clearInterval(intervalId);
   }, []);
+
+  if (!time) return null; // avoid rendering on the server (which was causing hydration error)
 
   return <span>{time.toLocaleTimeString()}</span>;
 };
