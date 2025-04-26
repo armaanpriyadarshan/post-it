@@ -22,7 +22,6 @@ const StickyNote = ({ text, color, width, height, fontClass }) => {
     padding: '10px',
     boxShadow: '2px 2px 5px rgba(0, 0, 0, 0.1)',
     borderRadius: '5px',
-    fontFamily: 'Arial, sans-serif',
     fontSize: '14px',
     color: '#333',
     overflow: 'hidden',
