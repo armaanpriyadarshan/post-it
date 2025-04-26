@@ -15,6 +15,10 @@ const StickyNote = ({ text, color, width, height, fontClass }) => {
     }
   };
 
+  const handleUpvote = () => {
+    console.log("Upvote button clicked!"); // Placeholder for upvote functionality
+  };
+
   const stickyNoteStyle = {
     backgroundColor: color,
     width: `${width}px`,
@@ -28,6 +32,20 @@ const StickyNote = ({ text, color, width, height, fontClass }) => {
     wordWrap: 'break-word',
     cursor: 'pointer',
     transition: 'transform 0.3s ease-in-out', // Smooth transition for hover effects
+    position: 'relative', // Ensure the button is positioned correctly
+  };
+
+  const buttonStyle = {
+    position: 'absolute',
+    bottom: '10px',
+    right: '10px',
+    backgroundColor: '#4CAF50',
+    color: 'white',
+    border: 'none',
+    borderRadius: '5px',
+    padding: '5px 10px',
+    cursor: 'pointer',
+    fontSize: '12px',
   };
 
   return (
@@ -49,6 +67,7 @@ const StickyNote = ({ text, color, width, height, fontClass }) => {
             width: expanded ? '50vw' : `${width}px`, // Animate width
             height: expanded ? '50vw' : `${height}px`, // Animate height
             transition: 'all 0.3s ease-in-out', // Smooth transition for size
+            position: 'relative', //put button on note
           }}
         >
           <p
@@ -63,6 +82,9 @@ const StickyNote = ({ text, color, width, height, fontClass }) => {
           >
             {text}
           </p>
+          <button style={buttonStyle} onClick={handleUpvote}>
+            Upvote
+            </button>
         </div>
       </div>
 
@@ -70,9 +92,9 @@ const StickyNote = ({ text, color, width, height, fontClass }) => {
         className={`sticky-note ${fontClass} duration-300 transform hover:scale-105 transition-all ease-in-out`}
         style={stickyNoteStyle}
         onClick={handleExpand}
-        >
+      >
         {text}
-        </div>
+      </div>
     </>
   );
 };
