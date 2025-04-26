@@ -94,8 +94,7 @@ export default function Home() {
       return acc + (note.story ? note.story.split(" ").length : 0);
     }, 0);
     setNumWords(totalWords);
-  }
-  , [stickyNotes]);
+  }, [stickyNotes]);
 
   return (
     <div className="min-h-screen flex flex-col items-center">
@@ -108,8 +107,12 @@ export default function Home() {
         >
           {prompt}
         </p>
-        <div className={`w-full px-10 pt-2 grid grid-cols-3 text-brown text-sm mt-2 ${ibmPlexMono.className}`}>
-          <span>{new Date().toISOString().split('T')[0]} | <TimeDisplay /></span>
+        <div
+          className={`w-full px-10 pt-2 grid grid-cols-3 text-brown text-sm mt-2 ${ibmPlexMono.className}`}
+        >
+          <span>
+            {new Date().toISOString().split("T")[0]} | <TimeDisplay />
+          </span>
           <span>{stickyNotes.length} notes posted</span>
           <span>{numWords} words written</span>
         </div>
@@ -129,6 +132,9 @@ export default function Home() {
           />
         ))}
       </div>
+      <Link href="/writing-space">
+        <Add />
+      </Link>
       <Footer />
     </div>
   );

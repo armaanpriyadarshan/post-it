@@ -2,7 +2,7 @@
 
 import { IBM_Plex_Mono } from "next/font/google";
 import { useEditor, EditorContent } from "@tiptap/react";
-import "../app/styles/tiptap_styles.css";
+import "../app/styles/tiptap_styles.scss";
 import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
 import Blockquote from "@tiptap/extension-blockquote";
@@ -10,9 +10,10 @@ import HorizontalRule from "@tiptap/extension-horizontal-rule";
 import CharacterCount from "@tiptap/extension-character-count";
 import TextAlign from "@tiptap/extension-text-align";
 import Highlight from "@tiptap/extension-highlight";
+import Placeholder from "@tiptap/extension-placeholder";
 import React from "react";
 import { supabase } from "@/lib/supabaseClient";
-import { useRouter } from 'next/navigation'
+import { useRouter } from "next/navigation";
 
 // apply custom Google font to the editor container
 const ibmMono = IBM_Plex_Mono({
@@ -21,7 +22,7 @@ const ibmMono = IBM_Plex_Mono({
 });
 
 const Tiptap = () => {
-  const router = useRouter()
+  const router = useRouter();
 
   const MenuBar = ({ editor }) => {
     if (!editor) {
@@ -113,6 +114,17 @@ const Tiptap = () => {
             type="button"
             onMouseDown={(event) => {
               event.preventDefault();
+              editor.chain().focus().toggleUnderline().run();
+            }}
+            className={buttonClasses(editor.isActive("underline"))}
+          >
+            Underline
+          </button>
+
+          <button
+            type="button"
+            onMouseDown={(event) => {
+              event.preventDefault();
               editor.chain().focus().toggleHighlight().run();
             }}
             className={buttonClasses(editor.isActive("highlight"))}
@@ -179,10 +191,15 @@ const Tiptap = () => {
       CharacterCount.configure({
         limit: 10000, // optional: 10k characters max
       }),
+      Placeholder.configure({
+        placeholder: "Start writing your story here ✍️",
+        showOnlyWhenEditable: true,
+        showOnlyWhenEmpty: true,
+        emptyEditorClass: "is-editor-empty is-empty",
+      }),
     ],
-    content: "<p>Start writing your story here ✍️</p>",
     immediatelyRender: false,
-    autofocus: true,
+    autofocus: false,
 
     editorProps: {
       attributes: {
@@ -201,7 +218,7 @@ const Tiptap = () => {
         .insert([
           {
             story: content,
-          }
+          },
         ])
         .then(({ data, error }) => {
           if (error) {
@@ -210,7 +227,7 @@ const Tiptap = () => {
           } else {
             console.log("Note added");
             editor.commands.clearContent();
-            router.push('/')
+            router.push("/");
           }
         });
     }
@@ -233,7 +250,7 @@ const Tiptap = () => {
           onClick={submitButton}
           className="px-4 py-2 bg-[var(--darkGreen)] text-white rounded-lg hover:bg-[color:var(--darkGreen)]/80 focus:outline-none focus:ring-2 focus:ring-[color:var(--lightGreen)] focus:ring-opacity-50"
         >
-          Submit
+          Post It!
         </button>
       </div>
     </div>
