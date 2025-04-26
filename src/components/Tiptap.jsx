@@ -21,7 +21,7 @@ const Tiptap = () => {
       `px-3 py-1 mr-2 rounded focus:outline-none
    ${
      isActive
-       ? "bg-blue-500 text-white"
+       ? "bg-[var(--darkGreen)] text-white"
        : "bg-gray-200 text-gray-800 hover:bg-gray-300"
    }`;
 
@@ -183,7 +183,7 @@ const Tiptap = () => {
 
   const submitButton = () => {
     if (editor) {
-      const content = editor.getHTML();
+      const content = JSON.stringify(editor.getJSON());
       console.log("Submitted content:", content);
       // Handle the submission logic here
     }
@@ -202,7 +202,7 @@ const Tiptap = () => {
         <button
           type="button"
           onClick={submitButton}
-          className="px-4 py-2 bg-blue-500 text-white rounded-lg"
+          className="px-4 py-2 bg-[var(--darkGreen)] text-white rounded-lg hover:bg-[color:var(--darkGreen)]/80 focus:outline-none focus:ring-2 focus:ring-[color:var(--lightGreen)] focus:ring-opacity-50"
         >
           Submit
         </button>
