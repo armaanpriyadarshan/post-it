@@ -22,6 +22,12 @@ export default function Home() {
         <p className={`text-green ${robotoCondensed.className} text-6xl uppercase mt-4`}>
           * prompt *
         </p>
+        <StickyNote
+          text="This is a sticky note!"
+          color="var(--darkGreen)" // Yellow color
+          width={200} // Width in pixels
+          height={200} // Height in pixels
+          />
       </div>
     </div>
   );
