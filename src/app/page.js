@@ -3,6 +3,7 @@
 import { IBM_Plex_Mono, Roboto_Condensed } from "next/font/google";
 import StickyNote from "@/components/stickyNote";
 import Footer from "@/components/footer";
+import Add from "@/components/add";
 import { supabase } from "@/lib/supabaseClient";
 import { useState, useEffect } from "react";
 
@@ -14,7 +15,7 @@ const ibmPlexMono = IBM_Plex_Mono({
 
 const robotoCondensed = Roboto_Condensed({
   subsets: ["latin"],
-  weight: ["200"],
+  weight: ["300"],
   display: "swap",
 });
 
@@ -50,7 +51,6 @@ export default function Home() {
     const { data, error } = await supabase
       .from("notes")
       .select("*")
-      // filter created_at to be within the current day
       .gte("created_at", new Date(new Date().setHours(0, 0, 0, 0)).toISOString())
       .order(order === "newest" ? "created_at" : "upvotes", { ascending: order === "newest" });
 
@@ -72,16 +72,16 @@ export default function Home() {
   }, []);
 
   return (
-      <div className="min-h-screen">
-        <div className="flex flex-col items-center justify-center m-12">
+      <div className="min-h-screen flex flex-col items-center">
+        <div className="flex flex-col items-center justify-center m-12 max-w-4xl mx-auto text-center">
           <p className={`text-brown ${ibmPlexMono.className} text-2xl underline`}>
             today&apos;s prompt is...
           </p>
-          <p className={`text-green ${robotoCondensed.className} text-6xl uppercase mt-4`}>
+          <p className={`text-green ${robotoCondensed.className} text-4xl uppercase mt-4`}>
             * {prompt} *
           </p>
         </div>
-        <div className="flex flex-wrap justify-center gap-6 p-4">
+        <div className="flex flex-wrap justify-center gap-6 p-4 mx-auto">
           {stickyNotes.map((note) => (
             <StickyNote
               key={note.id}
@@ -111,6 +111,7 @@ export default function Home() {
             height={250}
           />
         </div>
+        <Add />
         <Footer />
       </div>
   );
