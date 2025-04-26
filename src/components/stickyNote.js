@@ -4,8 +4,21 @@ import PropTypes from 'prop-types';
 import { IoCaretUpOutline } from "react-icons/io5";
 import { supabase } from "@/lib/supabaseClient";
 import { useState, useEffect } from "react";
+import { IBM_Plex_Mono} from "next/font/google";
 
-const StickyNote = ({ text, author, timestamp, upvotes, title, id, color, width, height, fontClass }) => {
+const ibmPlexMono = IBM_Plex_Mono({
+  subsets: ["latin"],
+  weight: ["400"],
+  display: "swap",
+});
+
+const ibmPlexMonoBold = IBM_Plex_Mono({
+  subsets: ["latin"],
+  weight: ["700"],
+  display: "swap",
+});
+
+const StickyNote = ({ text, author, timestamp, upvotes, title, id, color, width, height }) => {
   const [expanded, setExpanded] = React.useState(false);
 
   const handleExpand = () => {
@@ -75,7 +88,7 @@ const StickyNote = ({ text, author, timestamp, upvotes, title, id, color, width,
         >
           <div className="flex justify-between items-center">
             <h2
-              className={`text-2xl font-bold ${fontClass}`}
+              className={`text-2xl font-bold ${ibmPlexMonoBold.className}`}
               style={{
                 color: '#333',
                 marginBottom: '10px',
@@ -85,13 +98,13 @@ const StickyNote = ({ text, author, timestamp, upvotes, title, id, color, width,
             </h2>
             
             {author && (
-            <h3 className={`${fontClass}`}>
+            <h3 className={`${ibmPlexMono.className}`}>
               By {author}
             </h3>)}
           </div>
 
           <p
-            className={fontClass}
+            className={ibmPlexMono.className}
             style={{
               color: '#333',
               fontSize: '18px',
@@ -102,10 +115,10 @@ const StickyNote = ({ text, author, timestamp, upvotes, title, id, color, width,
           </p>
 
           <div className="flex justify-between items-center mt-4">
-            <span className={`text-sm ${fontClass}`} style={{ color: '#333' }}>
+            <span className={`text-sm ${ibmPlexMono.className}`} style={{ color: '#333' }}>
               {new Date(timestamp).toLocaleString()}
             </span>
-            <span className={`${fontClass}`} style={{ color: '#333' }}>
+            <span className={`${ibmPlexMono.className}`} style={{ color: '#333' }}>
               <button 
                 style={{
                   display: 'flex',
@@ -124,26 +137,22 @@ const StickyNote = ({ text, author, timestamp, upvotes, title, id, color, width,
       </div>
 
       <div
-        className={`sticky-note ${fontClass} duration-300 transform hover:scale-105 transition-all ease-in-out`}
+        className={`text-center sticky-note ${ibmPlexMono.className} duration-300 transform hover:scale-105 transition-all ease-in-out`}
         style={stickyNoteStyle}
         onClick={handleExpand}
         >
-         <div className="flex justify-between items-center">
+         <div className="flex justify-center items-center">
           <span
-            className={`font-bold ${fontClass}`}
+            className={`font-bold ${ibmPlexMonoBold.className}`}
             style={{
               color: '#333',
             }}
           >
             {title}
           </span>
-          
-          <span className={`${fontClass}`}>
-            {upvotes ? upvotes : 0}
-          </span>
         </div>
         
-        <span dangerouslySetInnerHTML={{ __html: text }} className={`${fontClass}`} style={{ color: '#333' }}></span>
+        <span dangerouslySetInnerHTML={{ __html: text }} className={`${ibmPlexMono.className} text-center`} style={{ color: '#333' }}></span>
       </div>
     </>
   );
@@ -158,7 +167,6 @@ StickyNote.propTypes = {
   color: PropTypes.string,
   width: PropTypes.number,
   height: PropTypes.number,
-  fontClass: PropTypes.string,
 };
 
 StickyNote.defaultProps = {
