@@ -1,30 +1,32 @@
+/* globals.css */
+
+/* Import Tailwind layers */
 @import "tailwindcss";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* Define custom variables */
 :root {
-  --background: #ffffff;
-  --foreground: #ffffff;
+  --cream: #f5ecde; /* cream */
+  --darkGreen: #2d6a52; /* darkGreen */
+  --lightGreen: #bbd378;     /* lightGreen */
+  --cafeBrown: #34251b;  /* cafeBrown */
+  
+  --font-mono: 'IBM Plex Mono', monospace;
 }
 
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #f5ecde;
-    --foreground: #ffffff;
-  }
-}
-
+/* Global body styles */
 body {
-  background: var(--background);
+  background-color: var(--cream);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Custom styles for specific elements */
+.text-brown {
+  color: var(--cafeBrown);
+}
+
+.text-green {
+  color: var(--darkGreen);
 }
