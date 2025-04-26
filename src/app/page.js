@@ -78,7 +78,7 @@ export default function Home() {
             today&apos;s prompt is...
           </p>
           <p className={`text-green ${robotoCondensed.className} text-4xl uppercase mt-4`}>
-            * {prompt} *
+            {prompt}
           </p>
         </div>
         <div className="flex flex-wrap justify-center gap-6 p-4 mx-auto">
