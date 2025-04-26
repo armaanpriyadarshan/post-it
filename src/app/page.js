@@ -1,6 +1,10 @@
+'use client';
+
 import { IBM_Plex_Mono, Roboto_Condensed } from "next/font/google";
 import StickyNote from "@/components/stickyNote";
 import Footer from "@/components/footer";
+import { supabase } from "@/lib/supabaseClient";
+import { useState, useEffect } from "react";
 
 const ibmPlexMono = IBM_Plex_Mono({
   subsets: ["latin"],
@@ -23,6 +27,50 @@ function green() {
 }
 
 export default function Home() {
+  const [prompt, setPrompt] = useState("Loading...");
+  const [stickyNotes, setStickyNotes] = useState([]);
+
+  const getPrompt = async () => {
+    const { data, error } = await supabase
+      .from("prompts")
+      .select("prompt")
+      .order("created_at", { ascending: false })
+      .limit(1);
+
+    if (error) {
+      console.error("Error fetching prompt:", error);
+    }
+
+    setPrompt(data[0]?.prompt || "No prompt available");
+  }
+
+  const getStickyNotes = async (order) => {
+  
+
+    const { data, error } = await supabase
+      .from("notes")
+      .select("*")
+      // filter created_at to be within the current day
+      .gte("created_at", new Date(new Date().setHours(0, 0, 0, 0)).toISOString())
+      .order(order === "newest" ? "created_at" : "upvotes", { ascending: order === "newest" });
+
+    if (error) {
+      console.error("Error fetching sticky notes:", error);
+    }
+
+    console.log("Sticky notes:", data);
+
+    setStickyNotes(data || []);
+  }
+  
+  useEffect(() => {
+    getPrompt();
+  }, []);
+
+  useEffect(() => {
+    getStickyNotes("newest");
+  }, []);
+
   return (
       <div className="min-h-screen">
         <div className="flex flex-col items-center justify-center m-12">
@@ -30,10 +78,20 @@ export default function Home() {
             today&apos;s prompt is...
           </p>
           <p className={`text-green ${robotoCondensed.className} text-6xl uppercase mt-4`}>
-            * prompt *
+            * {prompt} *
           </p>
         </div>
         <div className="flex flex-wrap justify-center gap-6 p-4">
+          {stickyNotes.map((note) => (
+            <StickyNote
+              key={note.id}
+              text={note.story}
+              color={green()}
+              width={250}
+              height={250}
+            />
+          ))}
+
           <StickyNote
             text="This is a sticky note with some text."
             color={green()}
