@@ -1,6 +1,8 @@
 "use client";
 import React from 'react';
 import PropTypes from 'prop-types';
+import { IoCaretUpOutline } from "react-icons/io5";
+import { supabase } from "@/lib/supabaseClient";
 
 const StickyNote = ({ text, author, timestamp, upvotes, title, color, width, height, fontClass }) => {
   const [expanded, setExpanded] = React.useState(false);
@@ -13,6 +15,20 @@ const StickyNote = ({ text, author, timestamp, upvotes, title, color, width, hei
     if (event.target.className.includes("overlay")) {
       setExpanded(false);
     }
+  };
+
+  const handleUpvote = async () => {
+    console.log("Upvote button clicked!"); // Placeholder for upvote functionality
+    // const { data, error } = await supabase
+    //   .from("notes")
+    //   .update({ upvotes: upvotes + 1 })
+    //   .eq("id", id);
+
+    // if (error) {
+    //   console.error("Error upvoting:", error);
+    // }
+
+    // upvotes = data[0]?.upvotes || 0;
   };
 
   const stickyNoteStyle = {
@@ -28,6 +44,7 @@ const StickyNote = ({ text, author, timestamp, upvotes, title, color, width, hei
     wordWrap: 'break-word',
     cursor: 'pointer',
     transition: 'transform 0.3s ease-in-out', // Smooth transition for hover effects
+    position: 'relative', // Ensure the button is positioned correctly
   };
 
   return (
@@ -52,6 +69,7 @@ const StickyNote = ({ text, author, timestamp, upvotes, title, color, width, hei
             overflow: 'auto',
             paddingLeft: expanded ? '40px' : '0', // Add left padding when expanded
             paddingTop: expanded ? '40px' : '0', // Add top padding when expanded
+            position: 'relative', //put button on note
           }}
         >
           <div className="flex justify-between items-center">
@@ -87,7 +105,18 @@ const StickyNote = ({ text, author, timestamp, upvotes, title, color, width, hei
               {new Date(timestamp).toLocaleString()}
             </span>
             <span className={`${fontClass}`} style={{ color: '#333' }}>
-              Upvotes: {upvotes}
+              <button 
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '5px',
+                }}
+                className="text-black rounded-full hover:text-white"
+                onClick={handleUpvote}>
+                <IoCaretUpOutline />
+                {upvotes}
+
+              </button> 
             </span>
           </div>
         </div>
@@ -114,7 +143,7 @@ const StickyNote = ({ text, author, timestamp, upvotes, title, color, width, hei
         </div>
         
         {text}
-        </div>
+      </div>
     </>
   );
 };
