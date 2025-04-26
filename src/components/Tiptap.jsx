@@ -1,5 +1,6 @@
 "use client";
 
+import { IBM_Plex_Mono } from "next/font/google";
 import { useEditor, EditorContent } from "@tiptap/react";
 import "../app/styles/tiptap_styles.css";
 import StarterKit from "@tiptap/starter-kit";
@@ -12,6 +13,12 @@ import Highlight from "@tiptap/extension-highlight";
 import React from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useRouter } from 'next/navigation'
+
+// apply custom Google font to the editor container
+const ibmMono = IBM_Plex_Mono({
+  subsets: ["latin"],
+  weight: ["400", "700"],
+});
 
 const Tiptap = () => {
   const router = useRouter()
@@ -210,7 +217,9 @@ const Tiptap = () => {
   };
 
   return (
-    <div className="w-full p-4 border border-gray-300 rounded-lg bg-white">
+    <div
+      className={`${ibmMono.className} w-full p-4 border border-gray-300 rounded-lg bg-white`}
+    >
       <MenuBar editor={editor} />
       <EditorContent editor={editor} />
       <div className="flex justify-between items-center mt-2">
