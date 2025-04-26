@@ -30,7 +30,8 @@ const StickyNote = ({ text, author, timestamp, upvotes, title, id, color, width,
   };
 
   const handleCollapse = (event) => {
-    if (event.target.className.includes("overlay")) {
+    const targetClassName = event.target.className;
+    if (typeof targetClassName === "string" && targetClassName.includes("overlay")) {
       setExpanded(false);
     }
   };
