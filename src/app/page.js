@@ -86,6 +86,10 @@ export default function Home() {
             <StickyNote
               key={note.id}
               text={note.story}
+              author={note.author}
+              timestamp={note.created_at}
+              upvotes={note.upvotes}
+              title={note.title}
               color={green()}
               width={250}
               height={250}

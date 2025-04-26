@@ -2,7 +2,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const StickyNote = ({ text, color, width, height, fontClass }) => {
+const StickyNote = ({ text, author, timestamp, upvotes, title, color, width, height, fontClass }) => {
   const [expanded, setExpanded] = React.useState(false);
 
   const handleExpand = () => {
@@ -46,23 +46,50 @@ const StickyNote = ({ text, color, width, height, fontClass }) => {
           className="expanded-sticky-note bg-white p-6 rounded-lg shadow-lg"
           style={{
             backgroundColor: color,
-            width: expanded ? '50vw' : `${width}px`, // Animate width
-            height: expanded ? '50vw' : `${height}px`, // Animate height
+            width: expanded ? '75vw' : `${width}px`, // Animate width
+            height: expanded ? '90vh' : `${height}px`, // Animate height
             transition: 'all 0.3s ease-in-out', // Smooth transition for size
+            overflow: 'auto',
+            paddingLeft: expanded ? '40px' : '0', // Add left padding when expanded
+            paddingTop: expanded ? '40px' : '0', // Add top padding when expanded
           }}
         >
+          <div className="flex justify-between items-center">
+            <h2
+              className={`text-2xl font-bold ${fontClass}`}
+              style={{
+                color: '#333',
+                marginBottom: '10px',
+              }}
+            >
+              {title}
+            </h2>
+            
+            {author && (
+            <h3 className={`${fontClass}`}>
+              By {author}
+            </h3>)}
+          </div>
+
           <p
             className={fontClass}
             style={{
               color: '#333',
               fontSize: '18px',
               wordWrap: 'break-word',
-              paddingLeft: expanded ? '20px' : '0', // Add left padding when expanded
-              paddingTop: expanded ? '20px' : '0', // Add top padding when expanded
             }}
           >
             {text}
           </p>
+
+          <div className="flex justify-between items-center mt-4">
+            <span className={`text-sm ${fontClass}`} style={{ color: '#333' }}>
+              {new Date(timestamp).toLocaleString()}
+            </span>
+            <span className={`${fontClass}`} style={{ color: '#333' }}>
+              Upvotes: {upvotes}
+            </span>
+          </div>
         </div>
       </div>
 
@@ -71,6 +98,21 @@ const StickyNote = ({ text, color, width, height, fontClass }) => {
         style={stickyNoteStyle}
         onClick={handleExpand}
         >
+         <div className="flex justify-between items-center">
+          <span
+            className={`font-bold ${fontClass}`}
+            style={{
+              color: '#333',
+            }}
+          >
+            {title}
+          </span>
+          
+          <span className={`${fontClass}`}>
+            {upvotes ? upvotes : 0}
+          </span>
+        </div>
+        
         {text}
         </div>
     </>
@@ -79,6 +121,10 @@ const StickyNote = ({ text, color, width, height, fontClass }) => {
 
 StickyNote.propTypes = {
   text: PropTypes.string.isRequired,
+  author: PropTypes.string,
+  timestamp: PropTypes.string,
+  upvotes: PropTypes.number,
+  title: PropTypes.string,
   color: PropTypes.string,
   width: PropTypes.number,
   height: PropTypes.number,
