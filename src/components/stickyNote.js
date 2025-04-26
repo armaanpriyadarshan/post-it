@@ -3,8 +3,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { IoCaretUpOutline } from "react-icons/io5";
 import { supabase } from "@/lib/supabaseClient";
+import { useState, useEffect } from "react";
 
-const StickyNote = ({ text, author, timestamp, upvotes, title, color, width, height, fontClass }) => {
+const StickyNote = ({ text, author, timestamp, upvotes, title, id, color, width, height, fontClass }) => {
   const [expanded, setExpanded] = React.useState(false);
 
   const handleExpand = () => {
@@ -17,18 +18,18 @@ const StickyNote = ({ text, author, timestamp, upvotes, title, color, width, hei
     }
   };
 
+  const [votes, setVotes] = useState(upvotes || 0);
+
   const handleUpvote = async () => {
-    console.log("Upvote button clicked!"); // Placeholder for upvote functionality
-    // const { data, error } = await supabase
-    //   .from("notes")
-    //   .update({ upvotes: upvotes + 1 })
-    //   .eq("id", id);
+    const { data, error } = await supabase
+      .from("notes")
+      .update({ upvotes: upvotes + 1 })
+      .eq("id", id);
 
-    // if (error) {
-    //   console.error("Error upvoting:", error);
-    // }
-
-    // upvotes = data[0]?.upvotes || 0;
+    if (error) {
+      console.error("Error upvoting:", error);
+    }
+    setVotes(upvotes + 1);
   };
 
   const stickyNoteStyle = {
@@ -114,7 +115,7 @@ const StickyNote = ({ text, author, timestamp, upvotes, title, color, width, hei
                 className="text-black rounded-full hover:text-white"
                 onClick={handleUpvote}>
                 <IoCaretUpOutline />
-                {upvotes}
+                {votes}
 
               </button> 
             </span>

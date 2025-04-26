@@ -90,6 +90,7 @@ export default function Home() {
               timestamp={note.created_at}
               upvotes={note.upvotes}
               title={note.title}
+              id={note.id}
               color={green()}
               width={250}
               height={250}
