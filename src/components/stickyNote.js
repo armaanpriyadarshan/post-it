@@ -97,8 +97,8 @@ const StickyNote = ({ text, author, timestamp, upvotes, title, id, color, width,
               fontSize: '18px',
               wordWrap: 'break-word',
             }}
+            dangerouslySetInnerHTML={{ __html: text }}
           >
-            {text}
           </p>
 
           <div className="flex justify-between items-center mt-4">
@@ -143,7 +143,7 @@ const StickyNote = ({ text, author, timestamp, upvotes, title, id, color, width,
           </span>
         </div>
         
-        {text}
+        <span dangerouslySetInnerHTML={{ __html: text }} className={`${fontClass}`} style={{ color: '#333' }}></span>
       </div>
     </>
   );

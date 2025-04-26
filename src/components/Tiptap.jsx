@@ -10,8 +10,12 @@ import CharacterCount from "@tiptap/extension-character-count";
 import TextAlign from "@tiptap/extension-text-align";
 import Highlight from "@tiptap/extension-highlight";
 import React from "react";
+import { supabase } from "@/lib/supabaseClient";
+import { useRouter } from 'next/navigation'
 
 const Tiptap = () => {
+  const router = useRouter()
+
   const MenuBar = ({ editor }) => {
     if (!editor) {
       return null;
@@ -183,9 +187,25 @@ const Tiptap = () => {
 
   const submitButton = () => {
     if (editor) {
-      const content = JSON.stringify(editor.getJSON());
+      const content = editor.getHTML();
       console.log("Submitted content:", content);
-      // Handle the submission logic here
+      supabase
+        .from("notes")
+        .insert([
+          {
+            story: content,
+          }
+        ])
+        .then(({ data, error }) => {
+          if (error) {
+            console.error("Error inserting note:", error);
+            // TODO: show error message to user
+          } else {
+            console.log("Note added");
+            editor.commands.clearContent();
+            router.push('/')
+          }
+        });
     }
   };
 
