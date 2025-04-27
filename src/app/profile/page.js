@@ -30,7 +30,7 @@ function green() {
 }
 
 export default function ProfilePage() {
-  const [username, setUsername] = useState("muzu lasu");
+  const [username, setUsername] = useState("loading...");
   const [storiesWritten, setStoriesWritten] = useState(0);
   const [wordsWritten, setWordsWritten] = useState(0);
   const [date, setDate] = useState(new Date().toLocaleDateString());

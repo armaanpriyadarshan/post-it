@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from "react";
 import Tiptap from "@/components/Tiptap";
-import Prompt from "@/components/prompt";
 import Link from "next/link";
 import { IBM_Plex_Mono } from "next/font/google";
 import { AiFillCaretLeft } from "react-icons/ai";
@@ -16,9 +15,8 @@ const ibmPlexMono = IBM_Plex_Mono({
 
 export default function WritingSpace() {
   const [prompt, setPrompt] = useState("Loading...");
-  const [stickyNotes, setStickyNotes] = useState([]);
-  const [numWords, setNumWords] = useState(0);
   const [title, setTitle] = useState("");
+  const [author, setAuthor] = useState("");
 
   const getPrompt = async () => {
     const { data, error } = await supabase
@@ -37,39 +35,17 @@ export default function WritingSpace() {
     setPrompt(data[0]?.prompt || "No prompt available");
   };
 
-  const getStickyNotes = async () => {
-    const { data, error } = await supabase
-      .from("notes")
-      .select("*")
-      .gte(
-        "created_at",
-        new Date(new Date().setHours(0, 0, 0, 0)).toISOString()
-      );
-
-    if (error) {
-      console.error("Error fetching sticky notes:", error);
-    }
-
-    setStickyNotes(data || []);
-  };
-
   useEffect(() => {
     getPrompt();
-    getStickyNotes();
   }, []);
-
-  useEffect(() => {
-    const totalWords = stickyNotes.reduce((acc, note) => {
-      return acc + (note.story ? note.story.split(" ").length : 0);
-    }, 0);
-    setNumWords(totalWords);
-  }, [stickyNotes]);
 
   return (
     <div className="min-h-screen bg-cream flex flex-col">
-      <div className="w-full">
-        <Prompt prompt={prompt} stickyNotes={stickyNotes} numWords={numWords} />
-      </div>
+       <div className="w-full px-12 max-w-4xl mx-12 mt-12 mx-auto text-center">
+         <p className={`text-green ${ibmPlexMono.className} text-xl uppercase`}>
+           {prompt}
+         </p>
+       </div>
 
       <div className="w-full flex justify-center p-8">
         <div className="flex flex-col w-full max-w-6xl">
@@ -77,12 +53,16 @@ export default function WritingSpace() {
             <input
               type="text"
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={(e) => {
+                setTitle(e.target.value)
+              }}
               placeholder="Enter your title here (optional btw)..."
               className="flex-1 p-2 border border-gray-300 rounded-lg bg-white max-w-md"
             />
             <input
               type="text"
+              value={author}
+              onChange={(e) => setAuthor(e.target.value)}
               placeholder="Enter your name here (also optional btw)..."
               className="flex-1 p-2 border border-gray-300 rounded-lg bg-white max-w-xs"
             />
@@ -98,6 +78,8 @@ export default function WritingSpace() {
                 setTitle(firstNode.textContent);
               }
             }}
+            title={title}
+            author={author}
           />{" "}
         </div>
       </div>

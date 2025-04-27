@@ -48,7 +48,7 @@ function TimeDisplay() {
 
 export default function Home() {
   const [user, setUser] = useState(null);
-  const [prompt, setPrompt] = useState("Loading...");
+  const [prompt, setPrompt] = useState("loading...");
   const [stickyNotes, setStickyNotes] = useState([]);
   const [numWords, setNumWords] = useState(0);
   const [numUpvotes, setNumUpvotes] = useState(0);
@@ -135,13 +135,12 @@ export default function Home() {
     if (session) {
       if (!user) {
         setUser(session.user);
-        setUsername(session.user.user_metadata.full_name || "Sign In");
-
+        setUsername(session.user.user_metadata.full_name || "sign in");
       }
     } else {
       if (user) {
         setUser(null);
-        setUsername("Sign In");  
+        setUsername("sign in");  
       }
     }
   })
@@ -195,11 +194,6 @@ export default function Home() {
     
     <div className="min-h-screen flex flex-col items-center">
       <div className="relative w-full">
-        <Link href="/profile" className="absolute top-5 right-7">
-          <p className={`text-brown ${ibmPlexMono.className} hover:underline`}>
-            {username}
-          </p>
-        </Link>
 
         {showWelcome && (
           <div
