@@ -176,7 +176,7 @@ export default function Home() {
       <div
         className={`flex justify-end pt-5 pr-7 bg-cream ${ibmPlexMono.className} hover:underline`}
       >
-        <p>{username}</p>
+        <p>{username.toLowerCase()}</p>
       </div>
     </Link>
     ) : (
@@ -188,7 +188,7 @@ export default function Home() {
           })
         }}
       >
-        <p>{username}</p>
+        <p>{username.toLowerCase()}</p>
       </div>
     ))}
     
