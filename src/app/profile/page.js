@@ -197,32 +197,43 @@ export default function ProfilePage() {
           </div>
         </div>
         <div className="flex flex-col max-w-5xl pt-4 px-6">
-          {/* dropdown fixed inside the right column */}
-          <div className="sticky top-0 z-10 bg-cream pb-4">
-            <div className="flex justify-start">
-              <select className={`${ibmPlexMono.className} pr-4`}>
-                <option className={ibmPlexMono.className} value="newest">stories</option>
-                <option className={ibmPlexMono.className} value="saved">bookmarks</option>
-              </select>
-            </div>
-          </div>
+          {stickyNotes.length > 0 ? (
+            <>
+              {/* dropdown fixed inside the right column */}
+              <div className="sticky top-0 z-10 bg-cream pb-4">
+                <div className="flex justify-start">
+                  <select className={`${ibmPlexMono.className} pr-4`}>
+                    <option className={ibmPlexMono.className} value="newest">stories</option>
+                    <option className={ibmPlexMono.className} value="saved">bookmarks</option>
+                  </select>
+                </div>
+              </div>
 
-          {/* scrollable sticky notes below */}
-          <div className="flex flex-wrap justify-start gap-6 overflow-y-auto max-h-[80vh]">
-            {stickyNotes.map((note) => (
-              <StickyNote
-                key={note.id}
-                text={note.story}
-                author={note.author}
-                timestamp={note.created_at}
-                upvotes={note.upvotes}
-                title={note.title}
-                color={green()}
-                width={250}
-                height={250}
-              />
-            ))}
-          </div>
+              {/* scrollable sticky notes below */}
+              <div className="flex flex-wrap justify-start gap-6 overflow-y-auto max-h-[80vh]">
+                {stickyNotes.map((note) => (
+                  <StickyNote
+                    key={note.id}
+                    text={note.story}
+                    author={note.author}
+                    timestamp={note.created_at}
+                    upvotes={note.upvotes}
+                    title={note.title}
+                    color={green()}
+                    width={250}
+                    height={250}
+                  />
+                ))}
+              </div>
+            </>
+          ) : (
+            /* if no sticky notes, show this centered text */
+            <div className="flex flex-1 text-center">
+              <p className={`${ibmPlexMono.className} text-lg text-brown`}>
+                you must get cold surrounded by all these drafts!
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </>
