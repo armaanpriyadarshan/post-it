@@ -189,13 +189,26 @@ export default function ProfilePage() {
             </h2>
             <h2 className="text-lg font-light mb-1">{wordsWritten}</h2>
           </div>
-          <div className="flex flex-row justify-between mb-1">
+          <div className="flex flex-row justify-between">
             <h2 className="text-lg font-light mb-1">
               <IoBookmark className="inline-block mr-2 text-xl" />
               &nbsp;bookmarks
             </h2>
             <h2 className="text-lg font-light mb-1">{bookmarks}</h2>
           </div>
+
+        <div className="ml-auto">
+
+          <Link 
+            onClick={() => {
+              supabase.auth.signOut();
+              setUser(null);
+            }}
+            href="/"
+          >
+            <Logout />
+          </Link>
+        </div>
         </div>
         <div className="flex flex-col max-w-5xl pt-4 px-6">
           {stickyNotes.length > 0 ? (
@@ -236,16 +249,7 @@ export default function ProfilePage() {
             </div>
           )}
         </div>
-        <div className="absolute bottom-4 pb-50 left-1/2 transform -translate-x-1/2">
-          <div
-            onClick={() => {
-              supabase.auth.signOut();
-              setUser(null);
-            }}
-          >
-            <Logout />
-          </div>
-        </div>
+        
       </div>
     </>
   );
