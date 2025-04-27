@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import Tiptap from "@/components/Tiptap";
 import Prompt from "@/components/prompt";
 import Link from "next/link";
-import { IBM_Plex_Mono, Roboto_Condensed } from "next/font/google";
+import { IBM_Plex_Mono } from "next/font/google";
 import { AiFillCaretLeft } from "react-icons/ai";
 import { supabase } from "@/lib/supabaseClient";
 
@@ -14,14 +14,11 @@ const ibmPlexMono = IBM_Plex_Mono({
   display: "swap",
 });
 
-const robotoCondensed = Roboto_Condensed({
-  subsets: ["latin"],
-  weight: ["300"],
-  display: "swap",
-});
-
 export default function WritingSpace() {
   const [prompt, setPrompt] = useState("Loading...");
+  const [stickyNotes, setStickyNotes] = useState([]);
+  const [numWords, setNumWords] = useState(0);
+  const [title, setTitle] = useState("");
 
   const getPrompt = async () => {
     const { data, error } = await supabase
@@ -40,16 +37,38 @@ export default function WritingSpace() {
     setPrompt(data[0]?.prompt || "No prompt available");
   };
 
+  const getStickyNotes = async () => {
+    const { data, error } = await supabase
+      .from("notes")
+      .select("*")
+      .gte(
+        "created_at",
+        new Date(new Date().setHours(0, 0, 0, 0)).toISOString()
+      );
+
+    if (error) {
+      console.error("Error fetching sticky notes:", error);
+    }
+
+    setStickyNotes(data || []);
+  };
+
   useEffect(() => {
     getPrompt();
+    getStickyNotes();
   }, []);
+
+  useEffect(() => {
+    const totalWords = stickyNotes.reduce((acc, note) => {
+      return acc + (note.story ? note.story.split(" ").length : 0);
+    }, 0);
+    setNumWords(totalWords);
+  }, [stickyNotes]);
 
   return (
     <div className="min-h-screen bg-cream flex flex-col">
-      <div className="w-full px-12 max-w-4xl mx-12 mt-12 mx-auto text-center">
-        <p className={`text-green ${ibmPlexMono.className} text-xl uppercase`}>
-          {prompt}
-        </p>
+      <div className="w-full">
+        <Prompt prompt={prompt} stickyNotes={stickyNotes} numWords={numWords} />
       </div>
 
       <div className="w-full flex justify-center p-8">
@@ -57,6 +76,8 @@ export default function WritingSpace() {
           <div className="mb-4 flex w-full gap-4 justify-between">
             <input
               type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
               placeholder="Enter your title here (optional btw)..."
               className="flex-1 p-2 border border-gray-300 rounded-lg bg-white max-w-md"
             />
@@ -66,7 +87,18 @@ export default function WritingSpace() {
               className="flex-1 p-2 border border-gray-300 rounded-lg bg-white max-w-xs"
             />
           </div>
-          <Tiptap />
+          <Tiptap
+            onUpdate={({ editor }) => {
+              const doc = editor.state.doc;
+              const firstNode = doc.content.firstChild;
+              if (
+                firstNode?.type.name === "heading" &&
+                firstNode.attrs.level === 1
+              ) {
+                setTitle(firstNode.textContent);
+              }
+            }}
+          />{" "}
         </div>
       </div>
 
