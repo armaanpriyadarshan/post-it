@@ -180,7 +180,7 @@ export default function Home() {
         alt="postit logo"
         width = {64}
         height = {64}
-        className="object-cover object-center -z-10 opacity-50 pt-2 pl-2"
+        className="object-cover object-center -z-10 opacity-50 p-4"
         priority
         />
         <p className = "pt-5">{username.toLowerCase()}</p>
