@@ -27,7 +27,7 @@ export default function Footer() {
                     </div>
                 )}
 
-                <Link href="/writing_space" className="">
+                <Link href="/writing-space">
                     <Add />
                 </Link>
                 

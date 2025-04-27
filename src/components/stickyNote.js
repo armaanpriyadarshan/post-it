@@ -1,12 +1,12 @@
 "use client";
-import React from 'react';
-import PropTypes from 'prop-types';
-import { IoCaretUpOutline } from "react-icons/io5";
-import { supabase } from "@/lib/supabaseClient";
-import { useState, useEffect } from "react";
-import { IBM_Plex_Mono} from "next/font/google";
 
-//fonts
+import React, { useState } from 'react';
+import PropTypes from 'prop-types';
+import { IoBookmarkOutline, IoBookmark } from "react-icons/io5";
+import { supabase } from "@/lib/supabaseClient";
+import { IBM_Plex_Mono } from "next/font/google";
+
+// fonts
 const ibmPlexMono = IBM_Plex_Mono({
   subsets: ["latin"],
   weight: ["400"],
@@ -19,12 +19,13 @@ const ibmPlexMonoBold = IBM_Plex_Mono({
   display: "swap",
 });
 
-const StickyNote = ({ text, author, timestamp, upvotes, title, id, color, width, height }) => {
-  //states
-  const [expanded, setExpanded] = React.useState(false);
-  const [votes, setVotes] = useState(upvotes || 0);
+const StickyNote = ({ text, author, timestamp, bookmarks, title, id, color, width, height }) => {
+  const [expanded, setExpanded] = useState(false);
+  const [votes, setVotes] = useState(bookmarks || 0);
+  const [hovering, setHovering] = useState(false);
 
-  //handlers
+  const isBookmarked = votes > 0;
+
   const handleExpand = () => {
     setExpanded(true);
   };
@@ -36,19 +37,24 @@ const StickyNote = ({ text, author, timestamp, upvotes, title, id, color, width,
     }
   };
 
-  const handleUpvote = async () => {
-    const { data, error } = await supabase
+  const handleBookmark = async (e) => {
+    e.stopPropagation();
+
+    const newVotes = votes > 0 ? 0 : 1;
+
+    const { error } = await supabase
       .from("notes")
-      .update({ upvotes: upvotes + 1 })
+      .update({ bookmarks: newVotes })
       .eq("id", id);
 
     if (error) {
-      console.error("Error upvoting:", error);
+      console.error("Error bookmarking:", error.message);
+      return;
     }
-    setVotes(upvotes + 1);
+
+    setVotes(newVotes);
   };
 
-  //styles
   const littleNote = {
     backgroundColor: color,
     width: `${width}px`,
@@ -61,29 +67,29 @@ const StickyNote = ({ text, author, timestamp, upvotes, title, id, color, width,
     overflow: 'hidden',
     wordWrap: 'break-word',
     cursor: 'pointer',
-    transition: 'transform 0.3s ease-in-out', // Smooth transition for hover effects
-    position: 'relative', // Ensure the button is positioned correctly
+    transition: 'transform 0.3s ease-in-out',
+    position: 'relative',
   };
 
   const overlay = {
-    backgroundColor: 'rgba(0, 0, 0, 0.4)', // Subtle dark layer with 20% opacity
-    transition: 'opacity 0.3s ease-in-out, visibility 0.3s ease-in-out', // Smooth fade-in/out for the overlay
-  }
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    transition: 'opacity 0.3s ease-in-out, visibility 0.3s ease-in-out',
+  };
 
   const bigNote = {
     backgroundColor: color,
-    width: expanded ? '75vw' : `${width}px`, // Animate width
-    height: expanded ? '90vh' : `${height}px`, // Animate height
-    transition: 'all 0.3s ease-in-out', // Smooth transition for size
+    width: expanded ? '75vw' : `${width}px`,
+    height: expanded ? '90vh' : `${height}px`,
+    transition: 'all 0.3s ease-in-out',
     overflow: 'auto',
-    paddingLeft: expanded ? '40px' : '0', // Add left padding when expanded
-    paddingTop: expanded ? '40px' : '0', // Add top padding when expanded
-    position: 'relative', //put button on note
+    paddingLeft: expanded ? '40px' : '0',
+    paddingTop: expanded ? '40px' : '0',
+    position: 'relative',
   };
 
   return (
     <>
-        {/* overlay when expanded sticky note */}
+      {/* overlay */}
       <div
         className={`overlay fixed inset-0 flex items-center justify-center z-10 ${
           expanded ? 'opacity-100 visible' : 'opacity-0 invisible'
@@ -91,26 +97,19 @@ const StickyNote = ({ text, author, timestamp, upvotes, title, id, color, width,
         style={overlay}
         onClick={handleCollapse}
       >
-        {/* expanded sticky note*/}
         <div
-          className="expanded-sticky-note bg-white p-6 rounded-lg shadow-lg po"
+          className="expanded-sticky-note bg-white p-6 rounded-lg shadow-lg flex flex-col"
           style={bigNote}
         >
           <div className="flex justify-between items-center">
-            <h2
-              className={`text-2xl font-bold ${ibmPlexMonoBold.className}`}
-              style={{
-                color: '#333',
-                marginBottom: '10px',
-              }}
-            >
+            <h2 className={`text-2xl font-bold ${ibmPlexMonoBold.className}`} style={{ color: '#333', marginBottom: '10px' }}>
               {title}
             </h2>
-            
             {author && (
-            <h3 className={`${ibmPlexMonoBold.className}`}>
-              By {author}
-            </h3>)}
+              <h3 className={`${ibmPlexMono.className} mr-2`}>
+                By {author}
+              </h3>
+            )}
           </div>
 
           <p
@@ -121,8 +120,9 @@ const StickyNote = ({ text, author, timestamp, upvotes, title, id, color, width,
               wordWrap: 'break-word',
             }}
             dangerouslySetInnerHTML={{ __html: text }}
-          >
-          </p>
+          />
+
+          <div className="flex-grow-1"></div>
 
           <div className="flex justify-between items-center mt-4">
             <span className={`text-sm ${ibmPlexMono.className}`} style={{ color: '#333' }}>
@@ -130,55 +130,51 @@ const StickyNote = ({ text, author, timestamp, upvotes, title, id, color, width,
             </span>
             <span className={`${ibmPlexMono.className}`} style={{ color: '#333' }}>
               <button 
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '5px',
-                }}
-                className="text-black rounded-full hover:text-white"
-                onClick={handleUpvote}>
-                <IoCaretUpOutline />
-                {votes}
-
-              </button> 
+                onClick={handleBookmark}
+                onMouseEnter={() => setHovering(true)}
+                onMouseLeave={() => setHovering(false)}
+                style={{ display: 'flex', alignItems: 'center', gap: '5px' }}
+                className="text-black rounded-full transition-colors duration-300"
+              >
+                {isBookmarked || hovering ? (
+                  <IoBookmark size={20} />
+                ) : (
+                  <IoBookmarkOutline size={20} />
+                )}
+                <span>{votes}</span>
+              </button>
             </span>
           </div>
         </div>
       </div>
 
-        {/* collapsed sticky note */}
+      {/* collapsed sticky note */}
       <div
         className={`sticky-note ${ibmPlexMono.className} duration-300 transform hover:scale-105 transition-all ease-in-out`}
         style={littleNote}
         onClick={handleExpand}
-        >
-         <div className="flex justify-center items-center mb-1">
-          <span
-            className={`font-bold ${ibmPlexMonoBold.className}`}
-            style={{
-              color: '#333',
-            }}
-          >
+      >
+        <div className="flex justify-center items-center mb-1">
+          <span className={`font-bold ${ibmPlexMonoBold.className}`} style={{ color: '#333' }}>
             {title}
           </span>
         </div>
-        
         <span dangerouslySetInnerHTML={{ __html: text }} className={`${ibmPlexMono.className}`} style={{ color: '#333' }}></span>
       </div>
     </>
   );
 };
 
-//defining props
 StickyNote.propTypes = {
-    text: PropTypes.string.isRequired,
-    author: PropTypes.string,
-    timestamp: PropTypes.string,
-    upvotes: PropTypes.number,
-    title: PropTypes.string,
-    color: PropTypes.string,
-    width: PropTypes.number,
-    height: PropTypes.number,
+  text: PropTypes.string.isRequired,
+  author: PropTypes.string,
+  timestamp: PropTypes.string,
+  bookmarks: PropTypes.number,
+  title: PropTypes.string,
+  color: PropTypes.string,
+  width: PropTypes.number,
+  height: PropTypes.number,
+  id: PropTypes.number,
 };
 
 export default StickyNote;

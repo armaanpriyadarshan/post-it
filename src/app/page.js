@@ -31,7 +31,7 @@ function green() { //generate random green color
   return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
 }
 
-const TimeDisplay = () => { //calculate and return time
+function TimeDisplay() {
   const [time, setTime] = useState(null);
 
   useEffect(() => {
@@ -43,10 +43,9 @@ const TimeDisplay = () => { //calculate and return time
     return () => clearInterval(intervalId);
   }, []);
 
-  if (!time) return null; // avoid rendering on the server (which was causing hydration error)
-
+  if (!time) return null; // avoid server-side hydration issues
   return <span>{time.toLocaleTimeString()}</span>;
-};
+}
 
 const getMidnightExpiration = () => {
   const now = new Date();
@@ -64,6 +63,8 @@ export default function Home() {
   const [showStickyNotes, setShowStickyNotes] = useState(false);
 
   const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+  const [numUpvotes, setNumUpvotes] = useState(0);
+  const [username, setUsername] = useState("sign in");
 
   const getPrompt = async () => {
     const { data, error } = await supabase
@@ -87,8 +88,8 @@ export default function Home() {
         "created_at",
         new Date(new Date().setHours(0, 0, 0, 0)).toISOString()
       )
-      .order(order === "newest" ? "created_at" : "upvotes", {
-        ascending: order === "newest",
+      .order(order === "newest" ? "created_at" : "bookmarks", {
+        ascending: order !== "newest",
       });
 
     if (error) {
@@ -105,7 +106,7 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    getStickyNotes("newest");
+    getStickyNotes("bookmarks");
   }, []);
 
   useEffect(() => {
@@ -116,7 +117,6 @@ export default function Home() {
   }, [stickyNotes]);
 
   useEffect(() => {
-    // check if the user has already seen the welcome page today
     const hasSeenWelcome = Cookies.get("hasSeenWelcome");
 
     if (!hasSeenWelcome) {
@@ -143,8 +143,22 @@ export default function Home() {
     showSecond();
   }, []);
 
+  useEffect(() => {
+    const totalUpvotes = stickyNotes.reduce((acc, note) => {
+      return acc + (note.upvotes || 0);
+    }, 0);
+    setNumUpvotes(totalUpvotes);
+  }, [stickyNotes]);
+
   return (
     <div className="min-h-screen flex flex-col items-center">
+      <Link href="/profile">
+        <div
+          className={`flex justify-end pt-5 pr-7 bg-cream ${ibmPlexMono.className} hover:underline`}
+        >
+          <p>{username}</p>
+        </div>
+        </Link>
       {/* Welcome Cover */}
       {showWelcome && (
         <div
@@ -191,45 +205,46 @@ export default function Home() {
         <p className={`text-brown ${ibmPlexMono.className} text-xl underline`}>
           today&apos;s prompt is...
         </p>
-        <p
-          className={`text-green ${robotoCondensed.className} text-4xl uppercase mt-4`}
-        >
+        <p className={`text-green ${robotoCondensed.className} text-4xl uppercase mt-4`}>
           {prompt}
         </p>
+
         <div
-          className={`w-full px-10 pt-2 grid grid-cols-3 text-brown text-sm mt-2 ${ibmPlexMono.className}`}
+          className={`w-full px-10 pt-2 grid grid-cols-4 text-brown text-sm mt-2 ${ibmPlexMono.className}`}
         >
           <span>
             {new Date().toISOString().split("T")[0]} | <TimeDisplay />
           </span>
           <span>{stickyNotes.length} notes posted</span>
           <span>{numWords} words written</span>
+          <span>{numUpvotes} bookmarks</span>
         </div>
       </div>
 
       {/* Sticky Notes */}
-      {showStickyNotes && (
-        <div className="flex flex-wrap justify-center gap-6 p-4 mx-auto">
-          {stickyNotes.map((note) => (
-            <StickyNote
-              key={note.id}
-              text={note.story}
-              author={note.author}
-              timestamp={note.created_at}
-              upvotes={note.upvotes}
-              title={note.title}
-              color={green()}
-              width={250}
-              height={250}
-            />
-          ))}
-        </div>
-      )}
+    {showStickyNotes && (
+      <div className="flex flex-wrap justify-center gap-6 p-4 mx-auto">
+        {stickyNotes.map((note) => (
+          <StickyNote
+            key={note.id}
+            text={note.story}
+            author={note.author}
+            timestamp={note.created_at}
+            upvotes={note.bookmarks}
+            id={note.id}
+            title={note.title}
+            color={green()}
+            width={250}
+            height={250}
+          />
+        ))}
+      </div> // Properly closed this div
+    )}
 
-      <Link href="/writing-space">
-        <Add />
-      </Link>
+
+      <div className="mb-7">
+      </div>
       <Footer />
-    </div>
+      </div>
   );
 }
