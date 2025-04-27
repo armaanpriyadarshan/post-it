@@ -3,13 +3,21 @@
 import React, { useState, useEffect } from "react";
 import Tiptap from "@/components/Tiptap";
 import Prompt from "@/components/prompt";
+import Link from "next/link";
+import { IBM_Plex_Mono } from "next/font/google";
+import { AiFillCaretLeft } from "react-icons/ai";
 import { supabase } from "@/lib/supabaseClient";
+
+const ibmPlexMono = IBM_Plex_Mono({
+  subsets: ["latin"],
+  weight: ["400"],
+  display: "swap",
+});
 
 export default function WritingSpace() {
   const [prompt, setPrompt] = useState("Loading...");
   const [stickyNotes, setStickyNotes] = useState([]);
   const [numWords, setNumWords] = useState(0);
-  const [title, setTitle] = useState("");
 
   const getPrompt = async () => {
     const { data, error } = await supabase
@@ -64,8 +72,6 @@ export default function WritingSpace() {
           <div className="mb-4 flex w-full gap-4 justify-between">
             <input
               type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
               placeholder="Enter your title here (optional btw)..."
               className="flex-1 p-2 border border-gray-300 rounded-lg bg-white max-w-md"
             />
@@ -75,19 +81,18 @@ export default function WritingSpace() {
               className="flex-1 p-2 border border-gray-300 rounded-lg bg-white max-w-xs"
             />
           </div>
-          <Tiptap
-            onUpdate={({ editor }) => {
-              const doc = editor.state.doc;
-              const firstNode = doc.content.firstChild;
-              if (
-                firstNode?.type.name === "heading" &&
-                firstNode.attrs.level === 1
-              ) {
-                setTitle(firstNode.textContent);
-              }
-            }}
-          />
+          <Tiptap />
         </div>
+      </div>
+
+      <div className="w-full flex justify-center mt-4">
+        <Link
+          href="/"
+          className={`flex items-center gap-2 text-brown text-xl hover:underline transition-colors duration-300 cursor-pointer ${ibmPlexMono.className}`}
+        >
+          <AiFillCaretLeft size={18} style={{ transform: "translateY(2px)" }} />
+          <span>need ideas?</span>
+        </Link>
       </div>
     </div>
   );
