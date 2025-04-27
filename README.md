@@ -4,7 +4,7 @@
 	<h1 align="center">post-it</h1>
 
 <p align="center">
-	Welcome to post.it! During your stay, you can peruse the stories left by others, or leave your own sticky note for the next visitor to find.
+	Welcome to post-it! During your stay, you can peruse the stories left by others, or leave your own sticky note for the next visitor to find.
 	<br>
 	<br>
 	This is a project made for HackDartmouth X
