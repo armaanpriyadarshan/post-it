@@ -5,6 +5,7 @@ import StickyNote from "@/components/stickyNote";
 import Footer from "@/components/footer";
 import { supabase } from "@/lib/supabaseClient";
 import { useState, useEffect } from "react";
+import Link from "next/link";
 
 const ibmPlexMono = IBM_Plex_Mono({
   subsets: ["latin"],
@@ -47,6 +48,7 @@ export default function Home() {
   const [stickyNotes, setStickyNotes] = useState([]);
   const [numWords, setNumWords] = useState(0);
   const [numUpvotes, setNumUpvotes] = useState(0);
+  const [username, setUsername] = useState("Sign In");
 
   const getPrompt = async () => {
     const { data, error } = await supabase
@@ -70,7 +72,7 @@ export default function Home() {
         "created_at",
         new Date(new Date().setHours(0, 0, 0, 0)).toISOString()
       )
-      .order(order === "newest" ? "created_at" : "upvotes", {
+      .order(order === "newest" ? "created_at" : "bookmarks", {
         ascending: order !== "newest",
       });
 
@@ -88,7 +90,7 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    getStickyNotes("upvotes");
+    getStickyNotes("bookmarks");
   }, []);
 
   useEffect(() => {
@@ -105,7 +107,14 @@ export default function Home() {
     setNumUpvotes(totalUpvotes);
   }, [stickyNotes]);
 
-  return (
+  return (<>
+    <Link href="/profile">
+    <div
+      className={`flex justify-end pt-5 pr-7 bg-cream ${ibmPlexMono.className} hover:underline`}
+    >
+      <p>{username}</p>
+    </div>
+    </Link>
     <div className="min-h-screen flex flex-col items-center">
       <div className="flex flex-col items-center justify-center mx-12 mt-12 mb-6 max-w-4xl mx-auto text-center">
         <p className={`text-brown ${ibmPlexMono.className} text-xl underline`}>
@@ -123,7 +132,7 @@ export default function Home() {
           </span>
           <span>{stickyNotes.length} notes posted</span>
           <span>{numWords} words written</span>
-          <span>{numUpvotes} upvotes</span>
+          <span>{numUpvotes} bookmarks</span>
         </div>
       </div>
       <div className="flex flex-wrap justify-center gap-6 px-4 mx-auto">
@@ -146,5 +155,5 @@ export default function Home() {
       </div>
       <Footer />
     </div>
-  );
+  </>);
 }
