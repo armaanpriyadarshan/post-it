@@ -24,7 +24,7 @@ export default function RootLayout({ children }) {
         suppressHydrationWarning={true}
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <div className = "absolute top-0 left-0 z-10 m-4">
+        <div className = "absolute top-0 left-0 z-10 m-4 w-auto">
           <Image
             src = "/logo.png"
             alt = "postit logo"
