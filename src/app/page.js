@@ -5,8 +5,6 @@ import StickyNote from "@/components/stickyNote";
 import Footer from "@/components/footer";
 import { supabase } from "@/lib/supabaseClient";
 import { useState, useEffect } from "react";
-import Link from "next/link";
-import Add from "@/components/add";
 
 const ibmPlexMono = IBM_Plex_Mono({
   subsets: ["latin"],
@@ -49,6 +47,7 @@ export default function Home() {
   const [prompt, setPrompt] = useState("Loading...");
   const [stickyNotes, setStickyNotes] = useState([]);
   const [numWords, setNumWords] = useState(0);
+  const [numUpvotes, setNumUpvotes] = useState(0);
 
   const getPrompt = async () => {
     const { data, error } = await supabase
@@ -73,7 +72,7 @@ export default function Home() {
         new Date(new Date().setHours(0, 0, 0, 0)).toISOString()
       )
       .order(order === "newest" ? "created_at" : "upvotes", {
-        ascending: order === "newest",
+        ascending: order !== "newest",
       });
 
     if (error) {
@@ -90,7 +89,7 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    getStickyNotes("newest");
+    getStickyNotes("upvotes");
   }, []);
 
   useEffect(() => {
@@ -100,9 +99,16 @@ export default function Home() {
     setNumWords(totalWords);
   }, [stickyNotes]);
 
+  useEffect(() => {
+    const totalUpvotes = stickyNotes.reduce((acc, note) => {
+      return acc + (note.upvotes || 0);
+    }, 0);
+    setNumUpvotes(totalUpvotes);
+  }, [stickyNotes]);
+
   return (
     <div className="min-h-screen flex flex-col items-center">
-      <div className="flex flex-col items-center justify-center m-12 max-w-4xl mx-auto text-center">
+      <div className="flex flex-col items-center justify-center mx-12 mt-12 mb-6 max-w-4xl mx-auto text-center">
         <p className={`text-brown ${ibmPlexMono.className} text-xl underline`}>
           today&apos;s prompt is...
         </p>
@@ -112,16 +118,17 @@ export default function Home() {
           {prompt}
         </p>
         <div
-          className={`w-full px-10 pt-2 grid grid-cols-3 text-brown text-sm mt-2 ${ibmPlexMono.className}`}
+          className={`w-full px-10 pt-2 grid grid-cols-4 text-brown text-sm mt-2 ${ibmPlexMono.className}`}
         >
           <span>
             {new Date().toISOString().split("T")[0]} | <TimeDisplay />
           </span>
           <span>{stickyNotes.length} notes posted</span>
           <span>{numWords} words written</span>
+          <span>{numUpvotes} upvotes</span>
         </div>
       </div>
-      <div className="flex flex-wrap justify-center gap-6 p-4 mx-auto">
+      <div className="flex flex-wrap justify-center gap-6 px-4 mx-auto">
         {stickyNotes.map((note) => (
           <StickyNote
             key={note.id}
@@ -129,6 +136,7 @@ export default function Home() {
             author={note.author}
             timestamp={note.created_at}
             upvotes={note.upvotes}
+            id={note.id}
             title={note.title}
             color={green()}
             width={250}
@@ -136,9 +144,9 @@ export default function Home() {
           />
         ))}
       </div>
-      <Link href={{ pathname: "/writing-space", query: { prompt } }}>
-        <Add />
-      </Link>
+      <div className="mb-7">
+
+      </div>
       <Footer />
     </div>
   );

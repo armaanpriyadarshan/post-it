@@ -39,7 +39,7 @@ const StickyNote = ({ text, author, timestamp, upvotes, title, id, color, width,
   const handleUpvote = async () => {
     const { data, error } = await supabase
       .from("notes")
-      .update({ upvotes: upvotes + 1 })
+      .update({ upvotes: upvotes ? upvotes + 1 : 0 })
       .eq("id", id);
 
     if (error) {
@@ -93,7 +93,7 @@ const StickyNote = ({ text, author, timestamp, upvotes, title, id, color, width,
       >
         {/* expanded sticky note*/}
         <div
-          className="expanded-sticky-note bg-white p-6 rounded-lg shadow-lg po"
+          className="expanded-sticky-note bg-white p-6 rounded-lg shadow-lg po flex flex-col"
           style={bigNote}
         >
           <div className="flex justify-between items-center">
@@ -108,7 +108,7 @@ const StickyNote = ({ text, author, timestamp, upvotes, title, id, color, width,
             </h2>
             
             {author && (
-            <h3 className={`${ibmPlexMonoBold.className}`}>
+            <h3 className={`${ibmPlexMono.className} mr-2`}>
               By {author}
             </h3>)}
           </div>
@@ -123,6 +123,8 @@ const StickyNote = ({ text, author, timestamp, upvotes, title, id, color, width,
             dangerouslySetInnerHTML={{ __html: text }}
           >
           </p>
+
+          <div className="flex-grow-1"></div>
 
           <div className="flex justify-between items-center mt-4">
             <span className={`text-sm ${ibmPlexMono.className}`} style={{ color: '#333' }}>
