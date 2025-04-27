@@ -117,7 +117,7 @@ export default function Home() {
         new Date(new Date().setHours(0, 0, 0, 0)).toISOString()
       )
       .order(order === "newest" ? "created_at" : "bookmarks", {
-        ascending: order !== "newest",
+        ascending: false,
       });
 
     if (error) {
