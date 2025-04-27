@@ -1,13 +1,12 @@
 "use client";
 
-import { IBM_Plex_Mono, Roboto_Condensed } from "next/font/google";
-import StickyNote from "@/components/stickyNote";
-import Footer from "@/components/footer";
+import React, { useState, useEffect } from "react";
+import Tiptap from "@/components/Tiptap";
 import Prompt from "@/components/prompt";
-import { supabase } from "@/lib/supabaseClient";
-import { useState, useEffect } from "react";
 import Link from "next/link";
-import Add from "@/components/add";
+import { IBM_Plex_Mono, Roboto_Condensed } from "next/font/google";
+import { AiFillCaretLeft } from "react-icons/ai";
+import { supabase } from "@/lib/supabaseClient";
 
 const ibmPlexMono = IBM_Plex_Mono({
   subsets: ["latin"],
@@ -21,19 +20,8 @@ const robotoCondensed = Roboto_Condensed({
   display: "swap",
 });
 
-function green() {
-  const hue = 120; // green hue
-  const saturation = Math.floor(Math.random() * 20) + 30;
-  const lightness = Math.floor(Math.random() * 20) + 75;
-
-  return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
-}
-
-export default function Home() {
+export default function WritingSpace() {
   const [prompt, setPrompt] = useState("Loading...");
-  const [stickyNotes, setStickyNotes] = useState([]);
-  const [numWords, setNumWords] = useState(0);
-  const [username, setUsername] = useState("Sign In");
 
   const getPrompt = async () => {
     const { data, error } = await supabase
@@ -49,70 +37,45 @@ export default function Home() {
     setPrompt(data[0]?.prompt || "No prompt available");
   };
 
-  const getStickyNotes = async (order) => {
-    const { data, error } = await supabase
-      .from("notes")
-      .select("*")
-      .gte(
-        "created_at",
-        new Date(new Date().setHours(0, 0, 0, 0)).toISOString()
-      )
-      .order(order === "newest" ? "created_at" : "upvotes", {
-        ascending: order === "newest",
-      });
-
-    if (error) {
-      console.error("Error fetching sticky notes:", error);
-    }
-
-    console.log("Sticky notes:", data);
-
-    setStickyNotes(data || []);
-  };
-
   useEffect(() => {
     getPrompt();
   }, []);
 
-  useEffect(() => {
-    getStickyNotes("newest");
-  }, []);
-
-  useEffect(() => {
-    const totalWords = stickyNotes.reduce((acc, note) => {
-      return acc + (note.story ? note.story.split(" ").length : 0);
-    }, 0);
-    setNumWords(totalWords);
-  }, [stickyNotes]);
-
   return (
-    <>
-      <Link href="/profile">
-        <div
-          className={`flex justify-end pt-5 pr-7 bg-cream ${ibmPlexMono.className} hover:underline`}
-        >
-          <p>{username}</p>
-        </div>
-      </Link>
-      <div className="min-h-screen flex flex-col items-center">
-        <Prompt prompt={prompt} stickyNotes={stickyNotes} numWords={numWords} />
-        <div className="flex flex-wrap justify-center gap-6 p-4 mx-auto">
-          {stickyNotes.map((note) => (
-            <StickyNote
-              key={note.id}
-              text={note.story}
-              author={note.author}
-              timestamp={note.created_at}
-              upvotes={note.upvotes}
-              title={note.title}
-              color={green()}
-              width={250}
-              height={250}
-            />
-          ))}
-        </div>
-        <Footer />
+    <div className="min-h-screen bg-cream flex flex-col">
+      <div className="w-full px-12 max-w-4xl mx-12 mt-12 mx-auto text-center">
+        <p className={`text-green ${ibmPlexMono.className} text-xl uppercase`}>
+          {prompt}
+        </p>
       </div>
-    </>
+
+      <div className="w-full flex justify-center p-8">
+        <div className="flex flex-col w-full max-w-6xl">
+          <div className="mb-4 flex w-full gap-4 justify-between">
+            <input
+              type="text"
+              placeholder="Enter your title here (optional btw)..."
+              className="flex-1 p-2 border border-gray-300 rounded-lg bg-white max-w-md"
+            />
+            <input
+              type="text"
+              placeholder="Enter your name here (also optional btw)..."
+              className="flex-1 p-2 border border-gray-300 rounded-lg bg-white max-w-xs"
+            />
+          </div>
+          <Tiptap />
+        </div>
+      </div>
+
+      <div className="w-full flex justify-center mt-4">
+        <Link
+          href="/"
+          className={`flex items-center gap-2 text-brown text-xl hover:underline transition-colors duration-300 cursor-pointer ${ibmPlexMono.className}`}
+        >
+          <AiFillCaretLeft size={18} style={{ transform: "translateY(2px)" }} />
+          <span>need ideas?</span>
+        </Link>
+      </div>
+    </div>
   );
 }
