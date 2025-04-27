@@ -24,6 +24,7 @@ const robotoCondensed = Roboto_Condensed({
 // Helper functions
 function green() {
   const hue = 120;
+  const hue = 120;
   const saturation = Math.floor(Math.random() * 20) + 30;
   const lightness = Math.floor(Math.random() * 20) + 75;
   return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
@@ -41,6 +42,7 @@ function TimeDisplay() {
     return () => clearInterval(intervalId);
   }, []);
 
+  if (!time) return null;
   if (!time) return null;
   return <span>{time.toLocaleTimeString()}</span>;
 }
