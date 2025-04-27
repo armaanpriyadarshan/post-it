@@ -3,12 +3,17 @@
 import React from "react";
 import { IBM_Plex_Mono } from "next/font/google";
 import { useState, useEffect } from "react";
-import { FiClock } from "react-icons/fi";
-import { FaBookOpen, FaPenFancy } from "react-icons/fa";
-import { AiOutlineFileText } from "react-icons/ai";
-import { BsBookmark } from "react-icons/bs";
+import { FaBookOpen } from "react-icons/fa";
+import {
+  AiFillCaretLeft,
+  AiFillClockCircle,
+  AiFillEdit,
+  AiFillFileWord,
+} from "react-icons/ai";
 import StickyNote from "@/components/stickyNote";
 import { supabase } from "@/lib/supabaseClient";
+import Link from "next/link";
+import { IoBookmark } from "react-icons/io5";
 
 const ibmPlexMono = IBM_Plex_Mono({
   subsets: ["latin"],
@@ -60,28 +65,52 @@ export default function ProfilePage() {
   return (
     <>
       <div
-        className={`max-w-4xl p-8 pt-10 ${ibmPlexMono.className} bg-cream flex flex-col justify-center items-left mx-auto`}
+        className={`max-w-xl p-8 pt-10 ${ibmPlexMono.className} bg-cream flex flex-col justify-center mx-auto`}
       >
-        <h1 className="text-2xl font-light mb-4">
-          <FaPenFancy className="inline-block mr-2 text-2xl" />
-          {`${username}`}
-        </h1>
-        <h2 className="text-2xl font-light mb-4 flex items-center">
-          <FiClock className="inline-block mr-2 text-xl" />
-          {`\t\tuser since: ${date}`}
-        </h2>
-        <h2 className="text-2xl font-light mb-4 flex items-center">
-          <FaBookOpen className="inline-block mr-2 text-xl" />
-          {`\t\tstories written: ${storiesWritten}`}
-        </h2>
-        <h2 className="text-2xl font-light mb-4 flex items-center">
-          <AiOutlineFileText className="inline-block mr-2 text-xl" />
-          {`\t\twords written: ${wordsWritten}`}
-        </h2>
-        <h2 className="text-2xl font-light mb-4 flex items-center">
-          <BsBookmark className="inline-block mr-2 text-xl" />
-          {`\t\tbookmarks: ${bookmarks}`}
-        </h2>
+        <Link href="/">
+          <div className="flex flex-row justify-between mb-1">
+            <h1 className="text-lg font-light mb-1">
+              <AiFillCaretLeft className="inline-block mr-2 text-xl" />
+              &nbsp;
+              <p className="inline-block hover:underline">write on!</p>
+            </h1>
+          </div>
+        </Link>
+        <div className="flex flex-row justify-between mb-1">
+          <h1 className="text-lg font-light mb-1">
+            <AiFillEdit className="inline-block mr-2 text-xl" />
+            &nbsp;pen name
+          </h1>
+          <h1 className="text-lg font-light mb-1">{`${username}`}</h1>
+        </div>
+        <div className="flex flex-row justify-between mb-1">
+          <h2 className="text-lg font-light mb-1">
+            <AiFillClockCircle className="inline-block mr-2 text-xl" />
+            &nbsp;user since
+          </h2>
+          <h2 className="text-lg font-light mb-1">{date}</h2>
+        </div>
+        <div className="flex flex-row justify-between mb-1">
+          <h2 className="text-lg font-light mb-1">
+            <FaBookOpen className="inline-block mr-2 text-xl" />
+            &nbsp;stories written
+          </h2>
+          <h2 className="text-lg font-light mb-1">{storiesWritten}</h2>
+        </div>
+        <div className="flex flex-row justify-between mb-1">
+          <h2 className="text-lg font-light mb-1">
+            <AiFillFileWord className="inline-block mr-2 text-xl" />
+            &nbsp;words written
+          </h2>
+          <h2 className="text-lg font-light mb-1">{wordsWritten}</h2>
+        </div>
+        <div className="flex flex-row justify-between mb-1">
+          <h2 className="text-lg font-light mb-1">
+            <IoBookmark className="inline-block mr-2 text-xl" />
+            &nbsp;bookmarks
+          </h2>
+          <h2 className="text-lg font-light mb-1">{bookmarks}</h2>
+        </div>
       </div>
       <div className="flex flex-wrap justify-center gap-6 p-4 mx-auto">
         {stickyNotes.map((note) => (

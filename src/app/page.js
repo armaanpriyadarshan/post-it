@@ -75,7 +75,9 @@ export default function Home() {
       setShowWelcome(true);
 
       // Set a cookie that expires at midnight
-      Cookies.set("hasSeenWelcome", "true", { expires: getMidnightExpiration() });
+      Cookies.set("hasSeenWelcome", "true", {
+        expires: getMidnightExpiration(),
+      });
     }
   }, []);
 
@@ -86,7 +88,7 @@ export default function Home() {
       await wait(500); // Additional delay for sticky notes
       setShowStickyNotes(true); // Show sticky notes
     };
-  
+
     showSequence(); // Run the sequence regardless of `showWelcome`
   }, []);
 
@@ -129,10 +131,16 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    const totalWords = stickyNotes.reduce((acc, note) => acc + (note.story ? note.story.split(" ").length : 0), 0);
+    const totalWords = stickyNotes.reduce(
+      (acc, note) => acc + (note.story ? note.story.split(" ").length : 0),
+      0
+    );
     setNumWords(totalWords);
 
-    const totalUpvotes = stickyNotes.reduce((acc, note) => acc + (note.upvotes || 0), 0);
+    const totalUpvotes = stickyNotes.reduce(
+      (acc, note) => acc + (note.upvotes || 0),
+      0
+    );
     setNumUpvotes(totalUpvotes);
   }, [stickyNotes]);
 
@@ -140,7 +148,9 @@ export default function Home() {
     <div className="min-h-screen flex flex-col items-center">
       <div className="relative w-full">
         <Link href="/profile" className="absolute top-5 right-7">
-          <p className={`text-brown ${ibmPlexMono.className} hover:underline`}>{username}</p>
+          <p className={`text-brown ${ibmPlexMono.className} hover:underline`}>
+            {username}
+          </p>
         </Link>
 
         {showWelcome && (
@@ -163,7 +173,9 @@ export default function Home() {
               }}
             >
               <h1
-                className={`text-6xl font-bold mb-4 text-gray-900 ${ibmPlexMono.className} ${
+                className={`text-6xl font-bold mb-4 text-gray-900 ${
+                  ibmPlexMono.className
+                } ${
                   showWelcome ? "opacity-100" : "opacity-0"
                 } transition-opacity duration-1000`}
               >
@@ -171,7 +183,9 @@ export default function Home() {
               </h1>
 
               <p
-                className={`text-xl mb-4 text-gray-900 ${ibmPlexMono.className} ${
+                className={`text-xl mb-4 text-gray-900 ${
+                  ibmPlexMono.className
+                } ${
                   showSecondText ? "opacity-100" : "opacity-0"
                 } transition-opacity duration-1000`}
               >
@@ -182,10 +196,22 @@ export default function Home() {
         )}
 
         <div className="flex flex-col items-center justify-center mx-12 mt-12 mb-6 max-w-4xl mx-auto text-center">
-          <p className={`text-brown ${ibmPlexMono.className} text-xl underline`}>today&apos;s prompt is...</p>
-          <p className={`text-green ${robotoCondensed.className} text-4xl uppercase mt-4`}>{prompt}</p>
-          <div className={`w-full px-10 pt-2 grid grid-cols-4 text-brown text-sm mt-2 ${ibmPlexMono.className}`}>
-            <span>{new Date().toISOString().split("T")[0]} | <TimeDisplay /></span>
+          <p
+            className={`text-brown ${ibmPlexMono.className} text-xl underline`}
+          >
+            today&apos;s prompt is...
+          </p>
+          <p
+            className={`text-green ${robotoCondensed.className} text-4xl uppercase mt-4`}
+          >
+            {prompt}
+          </p>
+          <div
+            className={`w-full px-10 pt-2 grid grid-cols-4 text-brown text-sm mt-2 ${ibmPlexMono.className}`}
+          >
+            <span>
+              {new Date().toISOString().split("T")[0]} | <TimeDisplay />
+            </span>
             <span>{stickyNotes.length} notes posted</span>
             <span>{numWords} words written</span>
             <span>{numUpvotes} bookmarks</span>
