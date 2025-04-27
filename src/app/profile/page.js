@@ -113,7 +113,7 @@ export default function ProfilePage() {
             <h2 className="text-lg font-light mb-1">{bookmarks}</h2>
           </div>
         </div>
-        <div className="flex-1 max-w-2/3 flex-wrap justify-center gap-6 pt-4 overflow-y-auto h-screen">
+        <div className="flex max-w-2/3 flex-wrap justify-center gap-6 pt-4 mx-0">
           {stickyNotes.map((note) => (
             <StickyNote
               key={note.id}
