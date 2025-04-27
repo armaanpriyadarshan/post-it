@@ -16,7 +16,7 @@ const ibmPlexMono = IBM_Plex_Mono({
 export default function WritingSpace() {
   const [prompt, setPrompt] = useState("Loading...");
   const [title, setTitle] = useState("");
-  const [author, setAuthor] = useState("");
+  const [user, setUser] = useState(null);
 
   const getPrompt = async () => {
     const { data, error } = await supabase
@@ -37,6 +37,28 @@ export default function WritingSpace() {
 
   useEffect(() => {
     getPrompt();
+  }, []);
+
+  supabase.auth.onAuthStateChange((event, session) => {
+    if (session) {
+      if (!user) {
+        setUser(session.user);
+      }
+    } else {
+      if (user) {
+        setUser(null);
+      }
+    }
+  })
+
+  useEffect(() => {
+    const { data, error } = supabase.auth.getUser();
+    if (error) {
+      console.error("Error fetching user:", error);
+    }
+    if (data) {
+      setUser(data.user);
+    }
   }, []);
 
   return (
@@ -62,7 +84,7 @@ export default function WritingSpace() {
               className="flex-1 p-2 border border-gray-300 rounded-lg bg-white max-w-md"
             />
           </div>
-          <Tiptap title={title} author={author} />
+          <Tiptap title={title} author={user ? user.user_metadata.full_name.toLowerCase() : ""} />
         </div>
       </div>
 
