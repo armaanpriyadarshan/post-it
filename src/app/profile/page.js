@@ -30,6 +30,7 @@ function green() {
 }
 
 export default function ProfilePage() {
+  const [user, setUser] = useState(null);
   const [username, setUsername] = useState("loading...");
   const [storiesWritten, setStoriesWritten] = useState(0);
   const [wordsWritten, setWordsWritten] = useState(0);
@@ -37,30 +38,98 @@ export default function ProfilePage() {
   const [bookmarks, setBookmarks] = useState(0);
   const [stickyNotes, setStickyNotes] = useState([]);
 
-  const getStickyNotes = async (order) => {
-    const { data, error } = await supabase
-      .from("notes")
-      .select("*")
-      .gte(
-        "created_at",
-        new Date(new Date().setHours(0, 0, 0, 0)).toISOString()
-      )
-      .order(order === "newest" ? "created_at" : "upvotes", {
-        ascending: order === "newest",
-      });
-
+  useEffect(() => {
+    const { data, error } = supabase.auth.getUser();
     if (error) {
-      console.error("Error fetching sticky notes:", error);
+      console.error("Error fetching user:", error);
     }
-
-    console.log("Sticky notes:", data);
-
-    setStickyNotes(data || []);
-  };
+    if (data) {
+      setUser(data.user);
+    }
+  }, []);
 
   useEffect(() => {
-    getStickyNotes("newest");
-  }, []);
+    setUsername(user?.user_metadata?.full_name || "loading...");
+    setDate(
+      user?.user_metadata?.created_at
+        ? new Date(user.user_metadata.created_at).toLocaleDateString()
+        : new Date().toLocaleDateString()
+    );
+  }, [user]);
+
+  supabase.auth.onAuthStateChange((event, session) => {
+    if (session) {
+      if (!user) {
+        setUser(session.user);
+      }
+    } else {
+      if (user) {
+        setUser(null);
+      }
+    }
+  })
+
+  useEffect(() => {
+    const fetchNotesArray = async () => {
+      const { data, error } = await supabase
+        .from("users")
+        .select("notes")
+        .eq("id", user?.id)
+        .single();
+
+      if (error) {
+        console.error("Error fetching notes:", error);
+      } else {
+        const notesArray = data.notes.map((note) => parseInt(note, 10));
+        console.log(notesArray);
+        return notesArray;
+      }
+    }
+
+    const fetchStickyNotes = async (notesArray, order) => {
+      const { data, error } = await supabase
+        .from("notes")
+        .select("*")
+        .in("id", notesArray)
+        .order(order === "newest" ? "created_at" : "bookmarks", {
+          ascending: order !== "newest",
+        });
+
+      if (error) {
+        console.error("Error fetching notes:", error);
+      }
+      else {
+        console.log(data);
+        setStickyNotes(data || []);
+      }
+    };
+
+    const fetchNotes = (order) => {
+      fetchNotesArray()
+        .then((notesArray) => {
+          if (notesArray) {
+            fetchStickyNotes(notesArray, order);
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching notes array:", error);
+        });
+    }
+
+    if (user) {
+      fetchNotes("newest");
+    }
+  }, [user]);
+
+  useEffect(() => {
+    const totalWords = stickyNotes.reduce(
+      (acc, note) => acc + (note.story ? note.story.split(" ").length : 0),
+      0
+    );
+    setWordsWritten(totalWords);
+
+    setStoriesWritten(stickyNotes.length);
+  }, [stickyNotes]);
 
   return (
     <>
@@ -81,7 +150,7 @@ export default function ProfilePage() {
             <AiFillEdit className="inline-block mr-2 text-xl" />
             &nbsp;pen name
           </h1>
-          <h1 className="text-lg font-light mb-1">{`${username}`}</h1>
+          <h1 className="text-lg font-light mb-1">{`${username.toLowerCase()}`}</h1>
         </div>
         <div className="flex flex-row justify-between mb-1">
           <h2 className="text-lg font-light mb-1">
@@ -113,7 +182,7 @@ export default function ProfilePage() {
         </div>
       </div>
       <div className="flex flex-wrap justify-center gap-6 p-4 mx-auto">
-        {stickyNotes.map((note) => (
+        {stickyNotes && stickyNotes.map((note) => (
           <StickyNote
             key={note.id}
             text={note.story}

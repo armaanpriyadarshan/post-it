@@ -24,6 +24,30 @@ const ibmMono = IBM_Plex_Mono({
 const Tiptap = ({ onUpdate, title, author }) => {
   const router = useRouter();
 
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const { data, error } = supabase.auth.getUser();
+    if (error) {
+      console.error("Error fetching user:", error);
+    }
+    if (data) {
+      setUser(data.user);
+    }
+  }, []);
+
+  supabase.auth.onAuthStateChange((event, session) => {
+    if (session) {
+      if (!user) {
+        setUser(session.user);
+      }
+    } else {
+      if (user) {
+        setUser(null);
+      }
+    }
+  })
+
   const MenuBar = ({ editor }) => {
     if (!editor) {
       return null;
@@ -210,33 +234,82 @@ const Tiptap = ({ onUpdate, title, author }) => {
     },
   });
 
-  const submitButton = () => {
-    if (editor) {
+  const submitButton = async () => {
+    if (!editor) return;
+  
+    try {
+      // 1. Get the content from editor
       const content = editor.getHTML();
+  
       console.log("Submitted content:", content);
       console.log("Title:", title);
       console.log("Author:", author);
-      supabase
+  
+      // 2. Insert the new note into 'notes' table
+      const { data: insertedNotes, error: insertError } = await supabase
         .from("notes")
-        .insert([
-          {
-            story: content,
-            title: title ? title : "",
-            author: author ? author : "",
-          },
-        ])
-        .then(({ data, error }) => {
-          if (error) {
-            console.error("Error inserting note:", error);
-            // TODO: show error message to user
-          } else {
-            console.log("Note added");
-            editor.commands.clearContent();
-            router.push("/");
-          }
-        });
+        .insert({
+          story: content,
+          title: title || "",
+          author: author || "",
+        })
+        .select('id'); // get back the new note's id
+  
+      if (insertError) {
+        console.error("Error inserting note:", insertError);
+        // TODO: show error to user
+        return;
+      }
+  
+      const newNoteId = insertedNotes[0].id;
+      console.log("New note ID:", newNoteId);
+  
+      // 3. If user exists, update their notes array
+      if (user) {
+        const { data: userData, error: fetchError } = await supabase
+          .from('users')
+          .select('notes')
+          .eq('id', user.id)
+          .single();
+  
+        if (fetchError) {
+          console.error("Error fetching user notes:", fetchError);
+          return;
+        }
+  
+        let notesArray = [];
+
+        try {
+          notesArray = userData.notes || []; // already a real array, no need to parse
+        } catch (e) {
+          console.error("Error parsing user notes:", e);
+        }
+
+        // Append the new note ID
+        notesArray.push(newNoteId);
+
+        // Update it without stringify
+        const { error: updateError } = await supabase
+          .from('users')
+          .update({ notes: notesArray }) // <-- IMPORTANT: pass real array
+          .eq('id', user.id);
+  
+        if (updateError) {
+          console.error("Error updating user notes:", updateError);
+          return;
+        }
+  
+        console.log("User notes updated successfully!");
+      }
+  
+      // 4. Clear the editor and redirect
+      editor.commands.clearContent();
+      router.push("/");
+  
+    } catch (err) {
+      console.error("Unexpected error during submission:", err);
     }
-  };
+  };  
 
   return (
     <div
