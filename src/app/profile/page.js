@@ -51,11 +51,6 @@ export default function ProfilePage() {
 
   useEffect(() => {
     setUsername(user?.user_metadata?.full_name || "loading...");
-    setDate(
-      user?.user_metadata?.created_at
-        ? new Date(user.user_metadata.created_at).toLocaleDateString()
-        : new Date().toLocaleDateString()
-    );
   }, [user]);
 
   supabase.auth.onAuthStateChange((event, session) => {
@@ -71,6 +66,27 @@ export default function ProfilePage() {
   })
 
   useEffect(() => {
+    const fetchDate = async () => {
+      const { data, error } = await supabase
+        .from("users")
+        .select("created_at")
+        .eq("id", user?.id)
+        .single();
+
+      if (error) {
+        console.error("Error fetching date:", error);
+      } else {
+        const createdAt = new Date(data.created_at).toLocaleDateString();
+        setDate(createdAt);
+      }
+    }
+
+    if (user) {
+      fetchDate();
+    }
+  }, [user]);
+
+  useEffect(() => {
     const fetchNotesArray = async () => {
       const { data, error } = await supabase
         .from("users")
@@ -82,7 +98,6 @@ export default function ProfilePage() {
         console.error("Error fetching notes:", error);
       } else {
         const notesArray = data.notes.map((note) => parseInt(note, 10));
-        console.log(notesArray);
         return notesArray;
       }
     }
@@ -100,7 +115,6 @@ export default function ProfilePage() {
         console.error("Error fetching notes:", error);
       }
       else {
-        console.log(data);
         setStickyNotes(data || []);
       }
     };

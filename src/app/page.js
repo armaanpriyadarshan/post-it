@@ -236,7 +236,7 @@ export default function Home() {
           </div>
         )}
 
-        <div className="flex flex-col items-center justify-center mx-12 mt-12 mb-6 max-w-4xl mx-auto text-center">
+        <div className="flex flex-col items-center justify-center mx-12 mt-3 mb-6 max-w-4xl mx-auto text-center">
           <p
             className={`text-brown ${ibmPlexMono.className} text-xl underline`}
           >
