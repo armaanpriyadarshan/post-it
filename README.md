@@ -16,7 +16,7 @@ post-it provides an interactive platform for writers to find inspiration, foster
 ## Current Features
  - Daily Gemini-generated prompt to get your creative juices flowing
  - Minimalistic monospace-themed display for creative pieces with a sticky note format
- - Fully integrated rich text editor for writing
+ - Fully integrated rich text editor suited for all your creative needs
  - Authentication service (OAuth) and functionality for storing user statistics and bookmarked stories
  
 ## Future Work
