@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import React, { useState, useEffect } from "react";
 import Tiptap from "@/components/Tiptap";
@@ -9,6 +9,7 @@ export default function WritingSpace() {
   const [prompt, setPrompt] = useState("Loading...");
   const [stickyNotes, setStickyNotes] = useState([]);
   const [numWords, setNumWords] = useState(0);
+  const [title, setTitle] = useState("");
 
   const getPrompt = async () => {
     const { data, error } = await supabase
@@ -63,6 +64,8 @@ export default function WritingSpace() {
           <div className="mb-4 flex w-full gap-4 justify-between">
             <input
               type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
               placeholder="Enter your title here (optional btw)..."
               className="flex-1 p-2 border border-gray-300 rounded-lg bg-white max-w-md"
             />
@@ -72,7 +75,18 @@ export default function WritingSpace() {
               className="flex-1 p-2 border border-gray-300 rounded-lg bg-white max-w-xs"
             />
           </div>
-          <Tiptap />
+          <Tiptap
+            onUpdate={({ editor }) => {
+              const doc = editor.state.doc;
+              const firstNode = doc.content.firstChild;
+              if (
+                firstNode?.type.name === "heading" &&
+                firstNode.attrs.level === 1
+              ) {
+                setTitle(firstNode.textContent);
+              }
+            }}
+          />
         </div>
       </div>
     </div>
