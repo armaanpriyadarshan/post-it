@@ -113,20 +113,33 @@ export default function ProfilePage() {
             <h2 className="text-lg font-light mb-1">{bookmarks}</h2>
           </div>
         </div>
-        <div className="flex max-w-2/3 flex-wrap justify-center gap-6 pt-4 mx-0">
-          {stickyNotes.map((note) => (
-            <StickyNote
-              key={note.id}
-              text={note.story}
-              author={note.author}
-              timestamp={note.created_at}
-              upvotes={note.upvotes}
-              title={note.title}
-              color={green()}
-              width={250}
-              height={250}
-            />
-          ))}
+        <div className="flex flex-col max-w-5xl pt-4 px-6">
+          {/* dropdown fixed inside the right column */}
+          <div className="sticky top-0 z-10 bg-cream pb-4">
+            <div className="flex justify-start">
+              <select className={`${ibmPlexMono.className} pr-4`}>
+                <option className={ibmPlexMono.className} value="newest">stories</option>
+                <option className={ibmPlexMono.className} value="saved">bookmarks</option>
+              </select>
+            </div>
+          </div>
+
+          {/* scrollable sticky notes below */}
+          <div className="flex flex-wrap justify-start gap-6 overflow-y-auto max-h-[80vh]">
+            {stickyNotes.map((note) => (
+              <StickyNote
+                key={note.id}
+                text={note.story}
+                author={note.author}
+                timestamp={note.created_at}
+                upvotes={note.upvotes}
+                title={note.title}
+                color={green()}
+                width={250}
+                height={250}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </>
