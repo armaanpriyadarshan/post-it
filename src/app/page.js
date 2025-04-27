@@ -135,7 +135,7 @@ export default function Home() {
           <span>{numUpvotes} bookmarks</span>
         </div>
       </div>
-      <div className="flex flex-wrap justify-center gap-6 px-4 mx-auto">
+      <div className="flex flex-wrap justify-center pt-12 gap-6 px-4 mx-auto">
         {stickyNotes.map((note) => (
           <StickyNote
             key={note.id}

@@ -49,7 +49,7 @@ export default function WritingSpace() {
         </p>
       </div>
 
-      <div className="w-full flex justify-center p-8">
+      <div className="w-full flex justify-center p-12">
         <div className="flex flex-col w-full max-w-6xl">
           <div className="mb-4 flex w-full gap-4 justify-between">
             <input
