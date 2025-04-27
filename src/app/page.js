@@ -20,7 +20,7 @@ const robotoCondensed = Roboto_Condensed({
 });
 
 function green() {
-  const hue = 120; // green hue
+  const hue = 120;
   const saturation = Math.floor(Math.random() * 20) + 30;
   const lightness = Math.floor(Math.random() * 20) + 75;
 
@@ -39,7 +39,7 @@ function TimeDisplay() {
     return () => clearInterval(intervalId);
   }, []);
 
-  if (!time) return null; // avoid server-side hydration issues
+  if (!time) return null;
   return <span>{time.toLocaleTimeString()}</span>;
 }
 
@@ -47,12 +47,8 @@ export default function Home() {
   const [prompt, setPrompt] = useState("Loading...");
   const [stickyNotes, setStickyNotes] = useState([]);
   const [numWords, setNumWords] = useState(0);
-<<<<<<< Updated upstream
   const [numUpvotes, setNumUpvotes] = useState(0);
-  const [username, setUsername] = useState("Sign In");
-=======
   const [username, setUsername] = useState("sign in");
->>>>>>> Stashed changes
 
   const getPrompt = async () => {
     const { data, error } = await supabase
@@ -111,53 +107,59 @@ export default function Home() {
     setNumUpvotes(totalUpvotes);
   }, [stickyNotes]);
 
-  return (<>
-    <Link href="/profile">
-    <div
-      className={`flex justify-end pt-5 pr-7 bg-cream ${ibmPlexMono.className} hover:underline`}
-    >
-      <p>{username}</p>
-    </div>
-    </Link>
-    <div className="min-h-screen flex flex-col items-center">
-      <div className="flex flex-col items-center justify-center mx-12 mt-12 mb-6 max-w-4xl mx-auto text-center">
-        <p className={`text-brown ${ibmPlexMono.className} text-xl underline`}>
-          today&apos;s prompt is...
-        </p>
-        <p className={`text-green ${robotoCondensed.className} text-4xl uppercase mt-4`}>
-          {prompt}
-        </p>
+  return (
+    <>
+      <div className="min-h-screen flex flex-col items-center">
+        <div className="relative w-full">
+          {/* sign in absolutely positioned at top right */}
+          <Link href="/profile" className="absolute top-5 right-7">
+            <p className={`text-brown ${ibmPlexMono.className} hover:underline`}>
+              {username}
+            </p>
+          </Link>
 
-        <div
-          className={`w-full px-10 pt-2 grid grid-cols-4 text-brown text-sm mt-2 ${ibmPlexMono.className}`}
-        >
-          <span>
-            {new Date().toISOString().split("T")[0]} | <TimeDisplay />
-          </span>
-          <span>{stickyNotes.length} notes posted</span>
-          <span>{numWords} words written</span>
-          <span>{numUpvotes} bookmarks</span>
+          {/* today's prompt normally centered */}
+          <div className="flex flex-col items-center justify-center mx-12 mt-12 mb-6 max-w-4xl mx-auto text-center">
+            <p className={`text-brown ${ibmPlexMono.className} text-xl underline`}>
+              today&apos;s prompt is...
+            </p>
+            <p className={`text-green ${robotoCondensed.className} text-4xl uppercase mt-4`}>
+              {prompt}
+            </p>
+
+            <div
+              className={`w-full px-10 pt-2 grid grid-cols-4 text-brown text-sm mt-2 ${ibmPlexMono.className}`}
+            >
+              <span>
+                {new Date().toISOString().split("T")[0]} | <TimeDisplay />
+              </span>
+              <span>{stickyNotes.length} notes posted</span>
+              <span>{numWords} words written</span>
+              <span>{numUpvotes} bookmarks</span>
+            </div>
+          </div>
         </div>
+
+        <div className="flex flex-wrap justify-center pt-8 gap-6 px-4 mx-auto">
+          {stickyNotes.map((note) => (
+            <StickyNote
+              key={note.id}
+              text={note.story}
+              author={note.author}
+              timestamp={note.created_at}
+              upvotes={note.bookmarks}
+              id={note.id}
+              title={note.title}
+              color={green()}
+              width={250}
+              height={250}
+            />
+          ))}
+        </div>
+
+        <div className="mb-7"></div>
+        <Footer />
       </div>
-      <div className="flex flex-wrap justify-center pt-12 gap-6 px-4 mx-auto">
-        {stickyNotes.map((note) => (
-          <StickyNote
-            key={note.id}
-            text={note.story}
-            author={note.author}
-            timestamp={note.created_at}
-            upvotes={note.bookmarks}
-            id={note.id}
-            title={note.title}
-            color={green()}
-            width={250}
-            height={250}
-          />
-        ))}
-      </div>
-      <div className="mb-7">
-      </div>
-      <Footer />
-    </div>
-  </>);
+    </>
+  );
 }
