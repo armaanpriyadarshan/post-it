@@ -41,46 +41,28 @@ export default function WritingSpace() {
 
   return (
     <div className="min-h-screen bg-cream flex flex-col">
-       <div className="w-full px-12 max-w-4xl mx-12 mt-12 mx-auto text-center">
-         <p className={`text-green ${ibmPlexMono.className} text-xl uppercase`}>
-           {prompt}
-         </p>
-       </div>
+      <div className="w-full px-12 max-w-4xl mx-12 mt-12 mx-auto text-center">
+        <p className={`text-green ${ibmPlexMono.className} text-xl uppercase`}>
+          {prompt}
+        </p>
+      </div>
 
       <div className="w-full flex justify-center p-8">
         <div className="flex flex-col w-full max-w-6xl">
-          <div className="mb-4 flex w-full gap-4 justify-between">
+          <div
+            className={`mb-4 ${ibmPlexMono.className} flex w-full gap-4 justify-between`}
+          >
             <input
               type="text"
               value={title}
               onChange={(e) => {
-                setTitle(e.target.value)
+                setTitle(e.target.value);
               }}
-              placeholder="Enter your title here (optional btw)..."
+              placeholder="enter your title here (optional btw)"
               className="flex-1 p-2 border border-gray-300 rounded-lg bg-white max-w-md"
             />
-            <input
-              type="text"
-              value={author}
-              onChange={(e) => setAuthor(e.target.value)}
-              placeholder="Enter your name here (also optional btw)..."
-              className="flex-1 p-2 border border-gray-300 rounded-lg bg-white max-w-xs"
-            />
           </div>
-          <Tiptap
-            onUpdate={({ editor }) => {
-              const doc = editor.state.doc;
-              const firstNode = doc.content.firstChild;
-              if (
-                firstNode?.type.name === "heading" &&
-                firstNode.attrs.level === 1
-              ) {
-                setTitle(firstNode.textContent);
-              }
-            }}
-            title={title}
-            author={author}
-          />{" "}
+          <Tiptap title={title} author={author} />
         </div>
       </div>
 

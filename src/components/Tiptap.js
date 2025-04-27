@@ -46,7 +46,7 @@ const Tiptap = ({ onUpdate, title, author }) => {
         setUser(null);
       }
     }
-  })
+  });
 
   const MenuBar = ({ editor }) => {
     if (!editor) {
@@ -216,7 +216,7 @@ const Tiptap = ({ onUpdate, title, author }) => {
         limit: 10000, // optional: 10k characters max
       }),
       Placeholder.configure({
-        placeholder: "Start writing your story here ✍️",
+        placeholder: "start writing your story here ✍️",
         showOnlyWhenEditable: true,
         showOnlyWhenEmpty: true,
         emptyEditorClass: "is-editor-empty is-empty",
@@ -236,15 +236,15 @@ const Tiptap = ({ onUpdate, title, author }) => {
 
   const submitButton = async () => {
     if (!editor) return;
-  
+
     try {
       // 1. Get the content from editor
       const content = editor.getHTML();
-  
+
       console.log("Submitted content:", content);
       console.log("Title:", title);
       console.log("Author:", author);
-  
+
       // 2. Insert the new note into 'notes' table
       const { data: insertedNotes, error: insertError } = await supabase
         .from("notes")
@@ -253,30 +253,30 @@ const Tiptap = ({ onUpdate, title, author }) => {
           title: title || "",
           author: author || "",
         })
-        .select('id'); // get back the new note's id
-  
+        .select("id"); // get back the new note's id
+
       if (insertError) {
         console.error("Error inserting note:", insertError);
         // TODO: show error to user
         return;
       }
-  
+
       const newNoteId = insertedNotes[0].id;
       console.log("New note ID:", newNoteId);
-  
+
       // 3. If user exists, update their notes array
       if (user) {
         const { data: userData, error: fetchError } = await supabase
-          .from('users')
-          .select('notes')
-          .eq('id', user.id)
+          .from("users")
+          .select("notes")
+          .eq("id", user.id)
           .single();
-  
+
         if (fetchError) {
           console.error("Error fetching user notes:", fetchError);
           return;
         }
-  
+
         let notesArray = [];
 
         try {
@@ -290,26 +290,25 @@ const Tiptap = ({ onUpdate, title, author }) => {
 
         // Update it without stringify
         const { error: updateError } = await supabase
-          .from('users')
+          .from("users")
           .update({ notes: notesArray }) // <-- IMPORTANT: pass real array
-          .eq('id', user.id);
-  
+          .eq("id", user.id);
+
         if (updateError) {
           console.error("Error updating user notes:", updateError);
           return;
         }
-  
+
         console.log("User notes updated successfully!");
       }
-  
+
       // 4. Clear the editor and redirect
       editor.commands.clearContent();
       router.push("/");
-  
     } catch (err) {
       console.error("Unexpected error during submission:", err);
     }
-  };  
+  };
 
   return (
     <div
