@@ -14,6 +14,7 @@ import StickyNote from "@/components/stickyNote";
 import { supabase } from "@/lib/supabaseClient";
 import Link from "next/link";
 import { IoBookmark } from "react-icons/io5";
+import Logout from "@/components/logout";
 
 const ibmPlexMono = IBM_Plex_Mono({
   subsets: ["latin"],
@@ -234,6 +235,16 @@ export default function ProfilePage() {
               </p>
             </div>
           )}
+        </div>
+        <div className="absolute bottom-4 pb-50 left-1/2 transform -translate-x-1/2">
+          <div
+            onClick={() => {
+              supabase.auth.signOut();
+              setUser(null);
+            }}
+          >
+            <Logout />
+          </div>
         </div>
       </div>
     </>

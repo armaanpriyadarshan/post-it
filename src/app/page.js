@@ -174,15 +174,7 @@ export default function Home() {
   return (<>
     {(user ? (
       <Link href="/profile">
-      <div className={`flex justify-between pr-7 bg-cream ${ibmPlexMono.className} hover:underline`} >
-        <Image 
-        src="/logo.png"
-        alt="postit logo"
-        width = {64}
-        height = {64}
-        className="object-cover object-center -z-10 opacity-50 p-4"
-        priority
-        />
+      <div className={`flex justify-end pr-7 bg-cream ${ibmPlexMono.className} hover:underline`} >
         <p className = "pt-5">{username.toLowerCase()}</p>
       </div>
     </Link>
@@ -195,14 +187,6 @@ export default function Home() {
           })
         }}
       >
-        <Image 
-        src="/logo.png"
-        alt="postit logo"
-        width = {64}
-        height = {64}
-        className="object-cover object-center -z-10 opacity-50 pl-5"
-        priority
-        />
         <p className = "pt-5">{username.toLowerCase()}</p>
       </div>
     ))}
