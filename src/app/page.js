@@ -44,6 +44,7 @@ function TimeDisplay() {
 }
 
 export default function Home() {
+  const [user, setUser] = useState(null);
   const [prompt, setPrompt] = useState("Loading...");
   const [stickyNotes, setStickyNotes] = useState([]);
   const [numWords, setNumWords] = useState(0);
@@ -93,6 +94,32 @@ export default function Home() {
     getStickyNotes("bookmarks");
   }, []);
 
+  supabase.auth.onAuthStateChange((event, session) => {
+    if (session) {
+      if (!user) {
+        setUser(session.user);
+        setUsername(session.user.user_metadata.full_name || "Sign In");
+
+      }
+    } else {
+      if (user) {
+        setUser(null);
+        setUsername("Sign In");  
+      }
+    }
+  })
+
+  useEffect(() => {
+    const { data, error } = supabase.auth.getUser();
+    if (error) {
+      console.error("Error fetching user:", error);
+    }
+    if (data) {
+      setUser(data.user);
+      setUsername(data.user.user_metadata.full_name || "Sign In");
+    }
+  }, []);
+
   useEffect(() => {
     const totalWords = stickyNotes.reduce((acc, note) => {
       return acc + (note.story ? note.story.split(" ").length : 0);
@@ -108,13 +135,27 @@ export default function Home() {
   }, [stickyNotes]);
 
   return (<>
-    <Link href="/profile">
-    <div
-      className={`flex justify-end pt-5 pr-7 bg-cream ${ibmPlexMono.className} hover:underline`}
-    >
-      <p>{username}</p>
-    </div>
+    {(user ? (
+      <Link href="/profile">
+      <div
+        className={`flex justify-end pt-5 pr-7 bg-cream ${ibmPlexMono.className} hover:underline`}
+      >
+        <p>{username}</p>
+      </div>
     </Link>
+    ) : (
+      <div
+        className={`flex justify-end pt-5 pr-7 bg-cream ${ibmPlexMono.className} hover:underline`}
+        onClick={() => {
+          supabase.auth.signInWithOAuth({
+            provider: 'google',
+          })
+        }}
+      >
+        <p>{username}</p>
+      </div>
+    ))}
+    
     <div className="min-h-screen flex flex-col items-center">
       <div className="flex flex-col items-center justify-center mx-12 mt-12 mb-6 max-w-4xl mx-auto text-center">
         <p className={`text-brown ${ibmPlexMono.className} text-xl underline`}>

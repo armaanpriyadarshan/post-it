@@ -27,7 +27,10 @@ export default function WritingSpace() {
     const { data, error } = await supabase
       .from("prompts")
       .select("prompt")
-      .order("created_at", { ascending: false })
+      .gte(
+        "created_at",
+        new Date(new Date().setHours(0, 0, 0, 0)).toISOString()
+      )
       .limit(1);
 
     if (error) {
