@@ -1,6 +1,6 @@
 
 <p align="center">
-	<img src="https://raw.githubusercontent.com/armaanpriyadarshan/post-it/refs/heads/master/public/logo.png" alt="Roadmap-WPI" width=200 height=200>
+	<img src="https://raw.githubusercontent.com/armaanpriyadarshan/post-it/refs/heads/master/public/logo.png" alt="post-it" width=200 height=200>
 	<h1 align="center">post-it</h1>
 
 <p align="center">
