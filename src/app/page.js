@@ -142,7 +142,7 @@ export default function Home() {
             text={note.story}
             author={note.author}
             timestamp={note.created_at}
-            upvotes={note.upvotes}
+            upvotes={note.bookmarks}
             id={note.id}
             title={note.title}
             color={green()}

@@ -39,7 +39,7 @@ const StickyNote = ({ text, author, timestamp, upvotes: bookmarks, title, id, co
   const handleUpvote = async () => {
     const { data, error } = await supabase
       .from("notes")
-      .update({ bookmarks: bookmarks ? bookmarks + 1 : 0 })
+      .update({ bookmarks: bookmarks ? bookmarks + 1 : 1 })
       .eq("id", id);
 
     if (error) {
