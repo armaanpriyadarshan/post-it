@@ -21,7 +21,7 @@ const ibmMono = IBM_Plex_Mono({
   weight: ["400", "700"],
 });
 
-const Tiptap = ({ onUpdate }) => {
+const Tiptap = ({ onUpdate, title, author }) => {
   const router = useRouter();
 
   const MenuBar = ({ editor }) => {
@@ -214,11 +214,15 @@ const Tiptap = ({ onUpdate }) => {
     if (editor) {
       const content = editor.getHTML();
       console.log("Submitted content:", content);
+      console.log("Title:", title);
+      console.log("Author:", author);
       supabase
         .from("notes")
         .insert([
           {
             story: content,
+            title: title ? title : "",
+            author: author ? author : "",
           },
         ])
         .then(({ data, error }) => {

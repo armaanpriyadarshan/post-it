@@ -47,7 +47,8 @@ function TimeDisplay() {
 }
 
 export default function Home() {
-  const [prompt, setPrompt] = useState("Loading...");
+  const [user, setUser] = useState(null);
+  const [prompt, setPrompt] = useState("loading...");
   const [stickyNotes, setStickyNotes] = useState([]);
   const [numWords, setNumWords] = useState(0);
   const [numUpvotes, setNumUpvotes] = useState(0);
@@ -130,6 +131,31 @@ export default function Home() {
     getStickyNotes("bookmarks");
   }, []);
 
+  supabase.auth.onAuthStateChange((event, session) => {
+    if (session) {
+      if (!user) {
+        setUser(session.user);
+        setUsername(session.user.user_metadata.full_name || "sign in");
+      }
+    } else {
+      if (user) {
+        setUser(null);
+        setUsername("sign in");  
+      }
+    }
+  })
+
+  useEffect(() => {
+    const { data, error } = supabase.auth.getUser();
+    if (error) {
+      console.error("Error fetching user:", error);
+    }
+    if (data) {
+      setUser(data.user);
+      setUsername(data.user.user_metadata.full_name || "Sign In");
+    }
+  }, []);
+
   useEffect(() => {
     const totalWords = stickyNotes.reduce(
       (acc, note) => acc + (note.story ? note.story.split(" ").length : 0),
@@ -144,14 +170,30 @@ export default function Home() {
     setNumUpvotes(totalUpvotes);
   }, [stickyNotes]);
 
-  return (
+  return (<>
+    {(user ? (
+      <Link href="/profile">
+      <div
+        className={`flex justify-end pt-5 pr-7 bg-cream ${ibmPlexMono.className} hover:underline`}
+      >
+        <p>{username.toLowerCase()}</p>
+      </div>
+    </Link>
+    ) : (
+      <div
+        className={`flex justify-end pt-5 pr-7 bg-cream ${ibmPlexMono.className} hover:underline`}
+        onClick={() => {
+          supabase.auth.signInWithOAuth({
+            provider: 'google',
+          })
+        }}
+      >
+        <p>{username.toLowerCase()}</p>
+      </div>
+    ))}
+    
     <div className="min-h-screen flex flex-col items-center">
       <div className="relative w-full">
-        <Link href="/profile" className="absolute top-5 right-7">
-          <p className={`text-brown ${ibmPlexMono.className} hover:underline`}>
-            {username}
-          </p>
-        </Link>
 
         {showWelcome && (
           <div
@@ -241,5 +283,5 @@ export default function Home() {
       <div className="mb-7"></div>
       <Footer />
     </div>
-  );
+  </>);
 }
