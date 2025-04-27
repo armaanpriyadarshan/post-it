@@ -4,13 +4,11 @@ import { IBM_Plex_Mono, Roboto_Condensed } from "next/font/google";
 import StickyNote from "@/components/stickyNote";
 import Footer from "@/components/footer";
 import { supabase } from "@/lib/supabaseClient";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import Add from "@/components/add";
 import Cookies from "js-cookie";
 
-
-//fonts
+// Fonts
 const ibmPlexMono = IBM_Plex_Mono({
   subsets: ["latin"],
   weight: ["400"],
@@ -23,11 +21,11 @@ const robotoCondensed = Roboto_Condensed({
   display: "swap",
 });
 
-function green() { //generate random green color
-  const hue = 120; // green hue
+// Helper functions
+function green() {
+  const hue = 120;
   const saturation = Math.floor(Math.random() * 20) + 30;
   const lightness = Math.floor(Math.random() * 20) + 75;
-
   return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
 }
 
@@ -43,28 +41,53 @@ function TimeDisplay() {
     return () => clearInterval(intervalId);
   }, []);
 
-  if (!time) return null; // avoid server-side hydration issues
+  if (!time) return null;
   return <span>{time.toLocaleTimeString()}</span>;
-}
-
-const getMidnightExpiration = () => {
-  const now = new Date();
-  const midnight = new Date();
-  midnight.setHours(24, 0, 0, 0); // set to next midnight
-  return Math.floor((midnight - now) / 1000); // return seconds until midnight
 }
 
 export default function Home() {
   const [prompt, setPrompt] = useState("Loading...");
   const [stickyNotes, setStickyNotes] = useState([]);
   const [numWords, setNumWords] = useState(0);
+  const [numUpvotes, setNumUpvotes] = useState(0);
+  const [username, setUsername] = useState("sign in");
   const [showWelcome, setShowWelcome] = useState(false);
-  const [showSecondText, setshowSecondText] = useState(false);
+  const [showSecondText, setShowSecondText] = useState(false);
   const [showStickyNotes, setShowStickyNotes] = useState(false);
 
   const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-  const [numUpvotes, setNumUpvotes] = useState(0);
-  const [username, setUsername] = useState("sign in");
+
+  // Function to calculate time until midnight in days
+  const getMidnightExpiration = () => {
+    const now = new Date();
+    const midnight = new Date();
+    midnight.setHours(24, 0, 0, 0); // Set to midnight
+    return (midnight - now) / (1000 * 60 * 60 * 24); // Return time in days
+  };
+
+  useEffect(() => {
+    // Check if the user has already seen the welcome page today
+    const hasSeenWelcome = Cookies.get("hasSeenWelcome");
+
+    if (!hasSeenWelcome) {
+      // Show the welcome page immediately
+      setShowWelcome(true);
+
+      // Set a cookie that expires at midnight
+      Cookies.set("hasSeenWelcome", "true", { expires: getMidnightExpiration() });
+    }
+  }, []);
+
+  useEffect(() => {
+    const showSequence = async () => {
+      await wait(200); // Delay for the second text
+      setShowSecondText(true); // Show the second text
+      await wait(500); // Additional delay for sticky notes
+      setShowStickyNotes(true); // Show sticky notes
+    };
+  
+    showSequence(); // Run the sequence regardless of `showWelcome`
+  }, []);
 
   const getPrompt = async () => {
     const { data, error } = await supabase
@@ -96,155 +119,100 @@ export default function Home() {
       console.error("Error fetching sticky notes:", error);
     }
 
-    console.log("Sticky notes:", data);
-
     setStickyNotes(data || []);
   };
 
   useEffect(() => {
     getPrompt();
-  }, []);
-
-  useEffect(() => {
     getStickyNotes("bookmarks");
   }, []);
 
   useEffect(() => {
-    const totalWords = stickyNotes.reduce((acc, note) => {
-      return acc + (note.story ? note.story.split(" ").length : 0);
-    }, 0);
+    const totalWords = stickyNotes.reduce((acc, note) => acc + (note.story ? note.story.split(" ").length : 0), 0);
     setNumWords(totalWords);
-  }, [stickyNotes]);
 
-  useEffect(() => {
-    const hasSeenWelcome = Cookies.get("hasSeenWelcome");
-
-    if (!hasSeenWelcome) {
-      // show welcome page
-      setShowWelcome(true);
-
-      // set a cookie that expires at midnight
-      Cookies.set("hasSeenWelcome", "true", { expires: getMidnightExpiration() / 86400 }); // Convert seconds to days
-    } else {
-      // skip the welcome page
-      setShowWelcome(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    const showSecond = async () => {
-      await wait(2000); //wait 2s before showing 1st text
-      setShowWelcome(true); //show welcome text
-      await wait(200)
-      setshowSecondText(true); //show 1s after 1st text
-      await wait(500);
-      setShowStickyNotes(true); //show 0.5s after 2nd text
-    };
-    showSecond();
-  }, []);
-
-  useEffect(() => {
-    const totalUpvotes = stickyNotes.reduce((acc, note) => {
-      return acc + (note.upvotes || 0);
-    }, 0);
+    const totalUpvotes = stickyNotes.reduce((acc, note) => acc + (note.upvotes || 0), 0);
     setNumUpvotes(totalUpvotes);
   }, [stickyNotes]);
 
   return (
     <div className="min-h-screen flex flex-col items-center">
-      <Link href="/profile">
-        <div
-          className={`flex justify-end pt-5 pr-7 bg-cream ${ibmPlexMono.className} hover:underline`}
-        >
-          <p>{username}</p>
-        </div>
+      <div className="relative w-full">
+        <Link href="/profile" className="absolute top-5 right-7">
+          <p className={`text-brown ${ibmPlexMono.className} hover:underline`}>{username}</p>
         </Link>
-      {/* Welcome Cover */}
-      {showWelcome && (
-        <div
-          className={`fixed inset-0 z-50 flex items-center justify-center transition-all duration-1500`}
-          onClick={() => setShowWelcome(false)}
-          style={{
-            backgroundColor: "rgba(0, 0, 0, 0.2)", // Semi-transparent background
-            backdropFilter: showWelcome ? "blur(50px)" : "blur(0px)", // blur effect
-            WebkitBackdropFilter: showWelcome ? "blur(50px)" : "blur(0px)", // for safari
-            transition: "opacity 2s ease-in-out",
-          }}
-        >
+
+        {showWelcome && (
           <div
-            className="text-center p-100 rounded-lg"
+            className="fixed inset-0 z-50 flex items-center justify-center transition-all duration-1500"
+            onClick={() => setShowWelcome(false)}
             style={{
-              backgroundColor: "rgba(255, 255, 255, 0.2)",
-              color: "#fff",
-              border: "3px solid rgba(255, 255, 255, 0.3)",
+              backgroundColor: "rgba(0, 0, 0, 0.2)",
+              backdropFilter: showWelcome ? "blur(50px)" : "blur(0px)",
+              WebkitBackdropFilter: showWelcome ? "blur(50px)" : "blur(0px)",
+              transition: "opacity 2s ease-in-out",
             }}
           >
-            {/* Welcome Text */}
-            <h1
-              className={`text-6xl font-bold mb-4 text-gray-900 ${ibmPlexMono.className} ${
-                showWelcome ? "opacity-100" : "opacity-0"
-              } transition-opacity duration-1000`}
+            <div
+              className="text-center p-100 rounded-lg"
+              style={{
+                backgroundColor: "rgba(255, 255, 255, 0.2)",
+                color: "#fff",
+                border: "3px solid rgba(255, 255, 255, 0.3)",
+              }}
             >
-              welcome! today is {new Date().toISOString().split("T")[0]}.
-            </h1>
+              <h1
+                className={`text-6xl font-bold mb-4 text-gray-900 ${ibmPlexMono.className} ${
+                  showWelcome ? "opacity-100" : "opacity-0"
+                } transition-opacity duration-1000`}
+              >
+                welcome! today is {new Date().toISOString().split("T")[0]}.
+              </h1>
 
-            {/* Click Anywhere Text */}
-            <p
-              className={`text-xl mb-4 text-gray-900 ${ibmPlexMono.className} ${
-                showSecondText ? "opacity-100" : "opacity-0"
-              } transition-opacity duration-1000`}
-            >
-              click anywhere to continue.
-            </p>
+              <p
+                className={`text-xl mb-4 text-gray-900 ${ibmPlexMono.className} ${
+                  showSecondText ? "opacity-100" : "opacity-0"
+                } transition-opacity duration-1000`}
+              >
+                click anywhere to continue.
+              </p>
+            </div>
           </div>
+        )}
+
+        <div className="flex flex-col items-center justify-center mx-12 mt-12 mb-6 max-w-4xl mx-auto text-center">
+          <p className={`text-brown ${ibmPlexMono.className} text-xl underline`}>today&apos;s prompt is...</p>
+          <p className={`text-green ${robotoCondensed.className} text-4xl uppercase mt-4`}>{prompt}</p>
+          <div className={`w-full px-10 pt-2 grid grid-cols-4 text-brown text-sm mt-2 ${ibmPlexMono.className}`}>
+            <span>{new Date().toISOString().split("T")[0]} | <TimeDisplay /></span>
+            <span>{stickyNotes.length} notes posted</span>
+            <span>{numWords} words written</span>
+            <span>{numUpvotes} bookmarks</span>
+          </div>
+        </div>
+      </div>
+
+      {showStickyNotes && (
+        <div className="flex flex-wrap justify-center gap-6 p-4 mx-auto">
+          {stickyNotes.map((note) => (
+            <StickyNote
+              key={note.id}
+              text={note.story}
+              author={note.author}
+              timestamp={note.created_at}
+              upvotes={note.bookmarks}
+              id={note.id}
+              title={note.title}
+              color={green()}
+              width={250}
+              height={250}
+            />
+          ))}
         </div>
       )}
 
-      {/* Main Content */}
-      <div className="flex flex-col items-center justify-center m-12 max-w-4xl mx-auto text-center">
-        <p className={`text-brown ${ibmPlexMono.className} text-xl underline`}>
-          today&apos;s prompt is...
-        </p>
-        <p className={`text-green ${robotoCondensed.className} text-4xl uppercase mt-4`}>
-          {prompt}
-        </p>
-
-        <div
-          className={`w-full px-10 pt-2 grid grid-cols-4 text-brown text-sm mt-2 ${ibmPlexMono.className}`}
-        >
-          <span>
-            {new Date().toISOString().split("T")[0]} | <TimeDisplay />
-          </span>
-          <span>{stickyNotes.length} notes posted</span>
-          <span>{numWords} words written</span>
-          <span>{numUpvotes} bookmarks</span>
-        </div>
-      </div>
-
-      {/* Sticky Notes */}
-    {showStickyNotes && (
-      <div className="flex flex-wrap justify-center gap-6 p-4 mx-auto">
-        {stickyNotes.map((note) => (
-          <StickyNote
-            key={note.id}
-            text={note.story}
-            author={note.author}
-            timestamp={note.created_at}
-            upvotes={note.bookmarks}
-            id={note.id}
-            title={note.title}
-            color={green()}
-            width={250}
-            height={250}
-          />
-        ))}
-      </div> // Properly closed this div
-    )}
-
-
-      <div className="mb-7">
-      </div>
+      <div className="mb-7"></div>
       <Footer />
-      </div>
+    </div>
   );
 }
