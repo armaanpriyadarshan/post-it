@@ -6,7 +6,7 @@
 
 /* Define custom variables */
 :root {
-  --cream: #f5ecde; /* cream */
+  --cream: rgba(255, 222, 168, 0.664); /* cream */
   --darkGreen: #2d6a52; /* darkGreen */
   --lightGreen: #bbd378;     /* lightGreen */
   --cafeBrown: #34251b;  /* cafeBrown */
