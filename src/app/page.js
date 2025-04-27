@@ -33,6 +33,7 @@ export default function Home() {
   const [prompt, setPrompt] = useState("Loading...");
   const [stickyNotes, setStickyNotes] = useState([]);
   const [numWords, setNumWords] = useState(0);
+  const [username, setUsername] = useState("Sign In");
 
   const getPrompt = async () => {
     const { data, error } = await supabase
@@ -85,24 +86,33 @@ export default function Home() {
   }, [stickyNotes]);
 
   return (
-    <div className="min-h-screen flex flex-col items-center">
-      <Prompt prompt={prompt} stickyNotes={stickyNotes} numWords={numWords} />
-      <div className="flex flex-wrap justify-center gap-6 p-4 mx-auto">
-        {stickyNotes.map((note) => (
-          <StickyNote
-            key={note.id}
-            text={note.story}
-            author={note.author}
-            timestamp={note.created_at}
-            upvotes={note.upvotes}
-            title={note.title}
-            color={green()}
-            width={250}
-            height={250}
-          />
-        ))}
+    <>
+      <Link href="/profile">
+        <div
+          className={`flex justify-end pt-5 pr-7 bg-cream ${ibmPlexMono.className} hover:underline`}
+        >
+          <p>{username}</p>
+        </div>
+      </Link>
+      <div className="min-h-screen flex flex-col items-center">
+        <Prompt prompt={prompt} stickyNotes={stickyNotes} numWords={numWords} />
+        <div className="flex flex-wrap justify-center gap-6 p-4 mx-auto">
+          {stickyNotes.map((note) => (
+            <StickyNote
+              key={note.id}
+              text={note.story}
+              author={note.author}
+              timestamp={note.created_at}
+              upvotes={note.upvotes}
+              title={note.title}
+              color={green()}
+              width={250}
+              height={250}
+            />
+          ))}
+        </div>
+        <Footer />
       </div>
-      <Footer />
-    </div>
+    </>
   );
 }
