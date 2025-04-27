@@ -47,8 +47,12 @@ export default function Home() {
   const [prompt, setPrompt] = useState("Loading...");
   const [stickyNotes, setStickyNotes] = useState([]);
   const [numWords, setNumWords] = useState(0);
+<<<<<<< Updated upstream
   const [numUpvotes, setNumUpvotes] = useState(0);
   const [username, setUsername] = useState("Sign In");
+=======
+  const [username, setUsername] = useState("sign in");
+>>>>>>> Stashed changes
 
   const getPrompt = async () => {
     const { data, error } = await supabase
