@@ -7,6 +7,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Cookies from "js-cookie";
+import Image from "next/image";
 
 // Fonts
 const ibmPlexMono = IBM_Plex_Mono({
@@ -173,22 +174,36 @@ export default function Home() {
   return (<>
     {(user ? (
       <Link href="/profile">
-      <div
-        className={`flex justify-end pt-5 pr-7 bg-cream ${ibmPlexMono.className} hover:underline`}
-      >
-        <p>{username.toLowerCase()}</p>
+      <div className={`flex justify-between pr-7 bg-cream ${ibmPlexMono.className} hover:underline`} >
+        <Image 
+        src="/logo.png"
+        alt="postit logo"
+        width = {64}
+        height = {64}
+        className="object-cover object-center -z-10 opacity-50 pt-2 pl-2"
+        priority
+        />
+        <p className = "pt-5">{username.toLowerCase()}</p>
       </div>
     </Link>
     ) : (
       <div
-        className={`flex justify-end pt-5 pr-7 bg-cream ${ibmPlexMono.className} hover:underline`}
+        className={`flex justify-end pr-7 bg-cream ${ibmPlexMono.className} hover:underline`}
         onClick={() => {
           supabase.auth.signInWithOAuth({
             provider: 'google',
           })
         }}
       >
-        <p>{username.toLowerCase()}</p>
+        <Image 
+        src="/logo.png"
+        alt="postit logo"
+        width = {64}
+        height = {64}
+        className="object-cover object-center -z-10 opacity-50 pl-5"
+        priority
+        />
+        <p className = "pt-5">{username.toLowerCase()}</p>
       </div>
     ))}
     
