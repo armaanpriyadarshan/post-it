@@ -172,22 +172,22 @@ export default function Home() {
   }, [stickyNotes]);
 
   return (<>
-    {(user ? (
+    {(user ? (  
       <Link href="/profile">
-      <div className={`flex justify-end pr-7 bg-cream ${ibmPlexMono.className} hover:underline`} >
-        <p className = "pt-5">{username.toLowerCase()}</p>
+      <div className={`flex justify-end pr-7 bg-cream ${ibmPlexMono.className} hover:underline w-auto cursor-pointer z-9 pt-5`}>
+        <p>{username.toLowerCase()}</p>
       </div>
     </Link>
     ) : (
       <div
-        className={`flex justify-end pr-7 bg-cream ${ibmPlexMono.className} hover:underline`}
+        className={`flex justify-end pr-7 bg-cream ${ibmPlexMono.className} hover:underline w-auto cursor-pointer z-9 pt-5`}
         onClick={() => {
           supabase.auth.signInWithOAuth({
             provider: 'google',
           })
         }}
       >
-        <p className = "pt-5">{username.toLowerCase()}</p>
+        <p>{username.toLowerCase()}</p>
       </div>
     ))}
     
