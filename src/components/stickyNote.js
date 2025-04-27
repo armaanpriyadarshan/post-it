@@ -107,7 +107,7 @@ const StickyNote = ({ text, author, timestamp, bookmarks, title, id, color, widt
             </h2>
             {author && (
               <h3 className={`${ibmPlexMono.className} mr-2`}>
-                By {author}
+                by {author}
               </h3>
             )}
           </div>
