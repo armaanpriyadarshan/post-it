@@ -11,7 +11,7 @@ import CharacterCount from "@tiptap/extension-character-count";
 import TextAlign from "@tiptap/extension-text-align";
 import Highlight from "@tiptap/extension-highlight";
 import Placeholder from "@tiptap/extension-placeholder";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useRouter } from "next/navigation";
 
@@ -21,7 +21,7 @@ const ibmMono = IBM_Plex_Mono({
   weight: ["400", "700"],
 });
 
-const Tiptap = () => {
+const Tiptap = ({ onUpdate }) => {
   const router = useRouter();
 
   const MenuBar = ({ editor }) => {
@@ -200,6 +200,7 @@ const Tiptap = () => {
     ],
     immediatelyRender: false,
     autofocus: false,
+    onUpdate,
 
     editorProps: {
       attributes: {

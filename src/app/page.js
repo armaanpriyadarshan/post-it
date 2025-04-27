@@ -26,7 +26,7 @@ function green() {
   return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
 }
 
-const TimeDisplay = () => {
+function TimeDisplay() {
   const [time, setTime] = useState(null);
 
   useEffect(() => {
@@ -38,10 +38,9 @@ const TimeDisplay = () => {
     return () => clearInterval(intervalId);
   }, []);
 
-  if (!time) return null; // avoid rendering on the server (which was causing hydration error)
-
+  if (!time) return null; // avoid server-side hydration issues
   return <span>{time.toLocaleTimeString()}</span>;
-};
+}
 
 export default function Home() {
   const [prompt, setPrompt] = useState("Loading...");
@@ -112,11 +111,10 @@ export default function Home() {
         <p className={`text-brown ${ibmPlexMono.className} text-xl underline`}>
           today&apos;s prompt is...
         </p>
-        <p
-          className={`text-green ${robotoCondensed.className} text-4xl uppercase mt-4`}
-        >
+        <p className={`text-green ${robotoCondensed.className} text-4xl uppercase mt-4`}>
           {prompt}
         </p>
+
         <div
           className={`w-full px-10 pt-2 grid grid-cols-4 text-brown text-sm mt-2 ${ibmPlexMono.className}`}
         >
@@ -145,7 +143,6 @@ export default function Home() {
         ))}
       </div>
       <div className="mb-7">
-
       </div>
       <Footer />
     </div>

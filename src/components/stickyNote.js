@@ -19,10 +19,10 @@ const ibmPlexMonoBold = IBM_Plex_Mono({
   display: "swap",
 });
 
-const StickyNote = ({ text, author, timestamp, upvotes, title, id, color, width, height }) => {
+const StickyNote = ({ text, author, timestamp, upvotes: bookmarks, title, id, color, width, height }) => {
   //states
   const [expanded, setExpanded] = React.useState(false);
-  const [votes, setVotes] = useState(upvotes || 0);
+  const [votes, setVotes] = useState(bookmarks || 0);
 
   //handlers
   const handleExpand = () => {
@@ -39,13 +39,13 @@ const StickyNote = ({ text, author, timestamp, upvotes, title, id, color, width,
   const handleUpvote = async () => {
     const { data, error } = await supabase
       .from("notes")
-      .update({ upvotes: upvotes ? upvotes + 1 : 0 })
+      .update({ bookmarks: bookmarks ? bookmarks + 1 : 0 })
       .eq("id", id);
 
     if (error) {
-      console.error("Error upvoting:", error);
+      console.error("Error bookmarking:", error);
     }
-    setVotes(upvotes + 1);
+    setVotes(bookmarks + 1);
   };
 
   //styles
