@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { IoBookmarkOutline, IoBookmark } from "react-icons/io5";
 import { supabase } from "@/lib/supabaseClient";
@@ -19,12 +19,11 @@ const ibmPlexMonoBold = IBM_Plex_Mono({
   display: "swap",
 });
 
-const StickyNote = ({ text, author, timestamp, bookmarks, title, id, color, width, height }) => {
+const StickyNote = ({ text, author, timestamp, bookmarks, title, id, color, width, height, user }) => {
   const [expanded, setExpanded] = useState(false);
   const [votes, setVotes] = useState(bookmarks || 0);
   const [hovering, setHovering] = useState(false);
-
-  const isBookmarked = votes > 0;
+  const [isBookmarked, setIsBookmarked] = useState(false);
 
   const handleExpand = () => {
     setExpanded(true);
@@ -40,19 +39,53 @@ const StickyNote = ({ text, author, timestamp, bookmarks, title, id, color, widt
   const handleBookmark = async (e) => {
     e.stopPropagation();
 
-    const newVotes = votes > 0 ? 0 : 1;
+    if (!user) {
+      supabase.auth.signInWithOAuth({
+        provider: 'google',
+      });
+      return;
+    } 
 
-    const { error } = await supabase
-      .from("notes")
-      .update({ bookmarks: newVotes })
-      .eq("id", id);
+
+    const {data, error} = await supabase
+        .from("users")
+        .select("bookmarked")
+        .eq("id", user.id)
+        .single();
 
     if (error) {
-      console.error("Error bookmarking:", error.message);
+      console.error("Error fetching user bookmarks:", error.message);
       return;
     }
 
-    setVotes(newVotes);
+    
+    const ogVotes = votes;
+    setVotes(isBookmarked ? ogVotes - 1 : ogVotes + 1);
+
+    const bookmarks = data.bookmarked || [];
+    const updatedBookmarks = isBookmarked ? bookmarks.filter((bookmark) => bookmark !== id) : [...bookmarks, id];
+
+    const { error: updateError } = await supabase
+      .from("users")
+      .update({ bookmarked: updatedBookmarks })
+      .eq("id", user.id);
+    
+    if (updateError) {
+      console.error("Error updating user bookmarks:", updateError.message);
+      return;
+    }
+
+    const { error: noteError } = await supabase
+      .from("notes")
+      .update({ bookmarks: isBookmarked ? ogVotes - 1 : ogVotes + 1 })
+      .eq("id", id);
+    
+    if (noteError) {
+      console.error("Error updating note bookmarks:", noteError.message);
+      return;
+    }
+
+    setIsBookmarked(!isBookmarked);
   };
 
   const littleNote = {
@@ -86,6 +119,50 @@ const StickyNote = ({ text, author, timestamp, bookmarks, title, id, color, widt
     paddingTop: expanded ? '40px' : '0',
     position: 'relative',
   };
+
+  useEffect(() => {
+    const fetchBookmarkStatus = async () => {
+      const { data, error } = await supabase
+      .from("users")
+      .select("bookmarked")
+      .eq("id", user.id)
+      .single();
+      
+      if (error) {
+        console.error("Error fetching user bookmarks:", error.message);
+      }
+
+      if (data) {
+        const bookmarks = data.bookmarked || [];
+        const isBookmarked = bookmarks.map((s) => parseInt(s, 10)).includes(id);
+        setIsBookmarked(isBookmarked);
+      }
+    };
+
+    if (user) {
+      fetchBookmarkStatus();
+    }
+  }, [user]);
+
+  useEffect(() => {
+    const fetchVotes = async () => {
+      const { data, error } = await supabase
+        .from("notes")
+        .select("bookmarks")
+        .eq("id", id)
+        .single();
+
+      if (error) {
+        console.error("Error fetching votes:", error.message);
+      }
+
+      if (data) {
+        setVotes(data.bookmarks || 0);
+      }
+    };
+
+    fetchVotes();
+  }, [isBookmarked]);
 
   return (
     <>

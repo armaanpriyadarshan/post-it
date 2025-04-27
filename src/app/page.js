@@ -165,7 +165,7 @@ export default function Home() {
     setNumWords(totalWords);
 
     const totalUpvotes = stickyNotes.reduce(
-      (acc, note) => acc + (note.upvotes || 0),
+      (acc, note) => acc + (note.bookmarks || 0),
       0
     );
     setNumUpvotes(totalUpvotes);
@@ -274,6 +274,7 @@ export default function Home() {
               color={green()}
               width={250}
               height={250}
+              user={user}
             />
           ))}
         </div>
