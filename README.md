@@ -8,6 +8,7 @@
 	<br>
 	<br>
 	This is a project made for HackDartmouth X
+	[DevPost](https://devpost.com/software/post-it-jrmkwg?_gl=1*1js7e1i*_gcl_au*MTkxOTI0OTg1MS4xNzUxMzgwOTQy*_ga*MTI5ODk5MjQ2OC4xNzUxMzgwOTQy*_ga_0YHJK3Y10M*czE3NTEzODA5NDEkbzEkZzEkdDE3NTEzODA5NzMkajI4JGwwJGgw)
 </p>
 
 ## About
